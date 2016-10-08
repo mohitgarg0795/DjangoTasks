@@ -13,8 +13,6 @@ $(document).ready(function(){
 
 	function checkChanges(){
 		
-		// TODO before removing the matrix store any changes in database (send ajax request to a route handelled at server to store data)
-
 		$('.crow').remove(); // remove current matrix
 		createMatrix(); // create matrix
 		var currentDate=new Date();
@@ -108,8 +106,15 @@ $(document).ready(function(){
 
 	$('.classMissed').on('click',function(){
 		$(this).parent().parent().attr('classTaken','false');
-		$(this).parent().parent().addClass('update');
+		$(this).parent().parent().removeClass('update');
 		$($(this).parent().parent().children()[1]).text('');
 	});
+
+	$('.updateButton').on('click',function(){
+
+		// TODO store any changes in database (send ajax request to a route handelled at server to store data)
+		// elements to be updated have the class update
+		// for any hour classes attended = all elements with class = update  
+	})
 
 });
