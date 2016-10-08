@@ -18,6 +18,8 @@ $(document).ready(function(){
 		$('.crow').remove(); // remove current matrix
 		createMatrix(); // create matrix
 		var currentDate=new Date();
+		var timeInterval=(((60-currentDate.getSeconds())*1000)+((59-currentDate.getMinutes())*60000));
+		console.log('Next Update in '+timeInterval/1000+' seconds');
 		var showDate=days[currentDate.getDay()]+', '+currentDate.getDate()+' '+months[currentDate.getMonth()]+' '+currentDate.getFullYear();
 		$('.headerDate').attr('date',currentDate.getDay());
 		$('.headerDate').attr('month',currentDate.getMonth());
@@ -38,7 +40,6 @@ $(document).ready(function(){
 				$('.'+timeArray[i]).addClass('currentTime');
 				$('.timeLabel').removeClass('currentTime');
 				$('.currentTime').css({'background':'#ecf0f1'});
-				break;
 			}
 			else
 			{
@@ -47,7 +48,7 @@ $(document).ready(function(){
 			}
 		}
 		$('.timeLabel').removeClass('locked');
-		setTimeout(function(){checkChanges()},20000); // check for changes every 20s
+		setTimeout(function(){checkChanges()},timeInterval); // check for changes every 20s
 	}
 
 	function createMatrix(){
@@ -108,7 +109,7 @@ $(document).ready(function(){
 	$('.classMissed').on('click',function(){
 		$(this).parent().parent().attr('classTaken','false');
 		$(this).parent().parent().addClass('update');
-		$($(this).parent().parent().children()[1]).text('Class Missed');
+		$($(this).parent().parent().children()[1]).text('');
 	});
 
 });
