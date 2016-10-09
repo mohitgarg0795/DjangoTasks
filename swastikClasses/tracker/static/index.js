@@ -111,10 +111,15 @@ $(document).ready(function(){
 	});
 
 	$('.updateButton').on('click',function(){
-
 		// TODO store any changes in database (send ajax request to a route handelled at server to store data)
 		// elements to be updated have the class update
-		// for any hour classes attended = all elements with class = update  
+		// for any hour classes attended = all elements with class = update
+
+		var classTaken = document.getElementsByClassName('update');
+		console.log(classTaken[0].className)
+
+		//$.ajax(url: "update.html")
+
 	})
 
 });
