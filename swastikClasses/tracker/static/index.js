@@ -31,7 +31,6 @@ $(document).ready(function(){
 			stat='pm';
 		}
 		time=time+stat;
-		console.log(timeArray);
 		for(var i=0;i<timeArray.length;i++)
 		{
 			if($('.'+timeArray[i]).hasClass(time))
@@ -106,9 +105,8 @@ $(document).ready(function(){
 			url:'fetch',
 			method:'GET',
 			success:function(data){
-				console.log(data);
 				var time=Object.keys(data);
-				 myMap={};
+				myMap={};
 				for(var i=0;i<time.length;i++)
 				{
 					var ctime=time[i];
@@ -124,9 +122,11 @@ $(document).ready(function(){
 					var targetElement=$($('.classStat')[i]).parent();
 					var time=targetElement.attr('time').substr(0,targetElement.attr('time').length-2);
 					var room=targetElement.attr('room');
-					if(myMap[time][room]!=undefined){
-						$($('.classStat')[i]).text('Class Taken');
-					}
+					try{
+						if(myMap[time][room]!=undefined){
+							$($('.classStat')[i]).text('Class Taken');
+						}
+					}catch(e){}
 				}
 			}
 		});
@@ -150,6 +150,18 @@ $(document).ready(function(){
 		// for any hour classes attended = all elements with class = update
 
 		//var classTaken = document.getElementsByClassName('update');
+
+		var classTaken=$('.currentTime');
+		var classes=[], time;
+		for(var i=0;i<classTaken.length;i++)
+		{
+			if($($(classTaken[i]).children()[1]).text()=='Class Taken'){
+				classes.push($(classTaken[i]).attr('room'));
+				time = $(classTaken[i]).attr('time');
+			}
+		}
+
+		/*
 		var classTaken = $('.update');
 		var classes = [], time;
 		
@@ -160,9 +172,8 @@ $(document).ready(function(){
 				classes.push($(classTaken[i]).attr('room'));
 				time = $(classTaken[i]).attr('time');
 				i+=1;
-			}
+			}*/
 		//console.log(classes);
-		console.log(time);
 		$.ajax({url: "update", type: 'GET', data: {'classes': classes, 'time': time}});
 		//send_text();
 
