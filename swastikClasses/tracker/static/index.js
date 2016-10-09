@@ -113,10 +113,34 @@ $(document).ready(function(){
 	});
 
 	$('.updateButton').on('click',function(){
-
 		// TODO store any changes in database (send ajax request to a route handelled at server to store data)
 		// elements to be updated have the class update
-		// for any hour classes attended = all elements with class = update  
+		// for any hour classes attended = all elements with class = update
+
+		//var classTaken = document.getElementsByClassName('update');
+		var classTaken = $('.update');
+		var classes = [], time;
+		
+		var i = 0;
+		while(i<classTaken.length)
+			{
+				//console.log($(classTaken[i]).attr('time'));
+				classes.push($(classTaken[i]).attr('room'));
+				time = $(classTaken[i]).attr('time');
+				i+=1;
+			}
+		//console.log(classes);
+		$.ajax({url: "update", type: 'GET', data: {'classes': classes, 'time': time}});
+		//send_text();
+
 	})
+/*
+	var send_text=function(){
+			var text="mohit";
+			$.get('update', {text: text}, function(data){
+               console.log("mohit");
+    });
+}
+*/
 
 });
