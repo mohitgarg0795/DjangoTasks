@@ -77,6 +77,8 @@ $(document).ready(function(){
 				{
 					$(col).addClass(timeArray[i-1]);
 					$(col).addClass(roomArray[j-1]);
+					$(col).attr('time',timeArray[i-1]);
+					$(col).attr('room',roomArray[j-1]);
 					var optionsContainer=document.createElement('div');
 					$(optionsContainer).addClass('optionsContainer');
 					var classTaken=document.createElement('div');
