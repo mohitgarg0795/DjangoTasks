@@ -21,5 +21,6 @@ import tracker.views as views
 urlpatterns = [
 	url(r'^admin/', admin.site.urls),
 	url(r'^update$', views.update),
+    url(r'^fetch$', views.fetch),
 	url(r'^$', views.index),
 ]

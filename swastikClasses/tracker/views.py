@@ -1,10 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from models import Rooms, Time
 from datetime import date,datetime
 
 def index(request):
-	print "index"
 	return render(request,"tracker/index.html")
 
 def update(request):
@@ -87,3 +86,86 @@ def update(request):
 		
 	return HttpResponse("garg")
 	
+
+def fetch(request):
+	Date = datetime.now()
+
+	context = {}
+
+	inst = Rooms.objects.filter(time__date = Date)
+
+	rooms = inst.filter(time__time1 = True)
+	rooms = rooms.values()
+	context['1'] = []
+	for i in rooms:
+		context['1'].append(i['roomId'])
+
+	rooms = inst.filter(time__time2 = True)
+	rooms = rooms.values()
+	context['2'] = []
+	for i in rooms:
+		context['2'].append(i['roomId'])
+
+	rooms = inst.filter(time__time3 = True)
+	rooms = rooms.values()
+	context['3'] = []
+	for i in rooms:
+		context['3'].append(i['roomId'])
+
+	rooms = inst.filter(time__time4 = True)
+	rooms = rooms.values()
+	context['4'] = []
+	for i in rooms:
+		context['4'].append(i['roomId'])
+
+	rooms = inst.filter(time__time5 = True)
+	rooms = rooms.values()
+	context['5'] = []
+	for i in rooms:
+		context['5'].append(i['roomId'])
+
+	rooms = inst.filter(time__time6 = True)
+	rooms = rooms.values()
+	context['6'] = []
+	for i in rooms:
+		context['6'].append(i['roomId'])
+
+	rooms = inst.filter(time__time7 = True)
+	rooms = rooms.values()
+	context['7'] = []
+	for i in rooms:
+		context['7'].append(i['roomId'])
+
+	rooms = inst.filter(time__time8 = True)
+	rooms = rooms.values()
+	context['8'] = []
+	for i in rooms:
+		context['8'].append(i['roomId'])
+
+	rooms = inst.filter(time__time9 = True)
+	rooms = rooms.values()
+	context['9'] = []
+	for i in rooms:
+		context['9'].append(i['roomId'])
+
+	rooms = inst.filter(time__time10 = True)
+	rooms = rooms.values()
+	context['10'] = []
+	for i in rooms:
+		context['10'].append(i['roomId'])
+
+	rooms = inst.filter(time__time11 = True)
+	rooms = rooms.values()
+	context['11'] = []
+	for i in rooms:
+		context['11'].append(i['roomId'])
+
+	rooms = inst.filter(time__time12 = True)
+	rooms = rooms.values()
+	context['12'] = []
+	for i in rooms:
+		context['12'].append(i['roomId'])
+
+	print context
+
+	return JsonResponse(context)
