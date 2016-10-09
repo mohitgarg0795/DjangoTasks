@@ -18,7 +18,7 @@ class Time(models.Model):
 	time8 = models.BooleanField(default = False)
 
 	def __unicode__(self):
-		return self.date
+		return str(self.date)
 
 class Rooms(models.Model):
 	roomId = models.CharField(max_length = 10)
