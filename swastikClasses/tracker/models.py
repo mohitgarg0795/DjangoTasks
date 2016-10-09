@@ -2,9 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-# Create your models here.
-
 class Time(models.Model):
+	date = models.DateField()
 	time9 = models.BooleanField(default = False)
 	time10 = models.BooleanField(default = False)
 	time11 = models.BooleanField(default = False)
@@ -18,8 +17,14 @@ class Time(models.Model):
 	time7 = models.BooleanField(default = False)
 	time8 = models.BooleanField(default = False)
 
+	def __unicode__(self):
+		return self.date
+
 class Rooms(models.Model):
 	roomId = models.CharField(max_length = 10)
-	time = models.ForeignKey(Time)
+	time = models.ForeignKey(Time, null = True)
+
+	def __unicode__(self):
+		return self.roomId
 	
 	

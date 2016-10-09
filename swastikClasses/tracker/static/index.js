@@ -77,6 +77,8 @@ $(document).ready(function(){
 				{
 					$(col).addClass(timeArray[i-1]);
 					$(col).addClass(roomArray[j-1]);
+					$(col).attr('time',timeArray[i-1]);
+					$(col).attr('room',roomArray[j-1]);
 					var optionsContainer=document.createElement('div');
 					$(optionsContainer).addClass('optionsContainer');
 					var classTaken=document.createElement('div');
@@ -115,11 +117,30 @@ $(document).ready(function(){
 		// elements to be updated have the class update
 		// for any hour classes attended = all elements with class = update
 
-		var classTaken = document.getElementsByClassName('update');
-		console.log(classTaken[0].className)
-
-		//$.ajax(url: "update.html")
+		//var classTaken = document.getElementsByClassName('update');
+		var classTaken = $('.update');
+		var classes = [], time;
+		
+		var i = 0;
+		while(i<classTaken.length)
+			{
+				//console.log($(classTaken[i]).attr('time'));
+				classes.push($(classTaken[i]).attr('room'));
+				time = $(classTaken[i]).attr('time');
+				i+=1;
+			}
+		//console.log(classes);
+		$.ajax({url: "update", type: 'GET', data: {'classes': classes, 'time': time}});
+		//send_text();
 
 	})
+/*
+	var send_text=function(){
+			var text="mohit";
+			$.get('update', {text: text}, function(data){
+               console.log("mohit");
+    });
+}
+*/
 
 });

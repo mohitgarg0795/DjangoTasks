@@ -19,5 +19,7 @@ from django.contrib import admin
 import tracker.views as views
 
 urlpatterns = [
-    url(r'^', views.index),
+	url(r'^admin/', admin.site.urls),
+	url(r'^update$', views.update),
+	url(r'^$', views.index),
 ]
