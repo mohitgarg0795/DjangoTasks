@@ -76,14 +76,19 @@ def update(request):
 		except:
 			timeObj = Time.objects.create(date = Date, time12 = True)
 
+	timeObj.Rooms.clear()
+
 	for roomId in rooms:
+		print roomId
 		try:
 			inst = Rooms.objects.get(roomId = roomId)
 		except:
 			inst = Rooms.objects.create(roomId = roomId)
-		inst.time = timeObj
-		inst.save();
-		
+		timeObj.Rooms.add(inst)
+	timeObj.save()
+
+	print timeObj.Rooms.all()
+
 	return HttpResponse("1")
 	
 
@@ -92,80 +97,91 @@ def fetch(request):
 
 	context = {}
 
-	inst = Rooms.objects.filter(time__date = Date)
+	inst = Time.objects.filter(date = Date)
+	
+	rooms = inst.filter(time1 = True)			#return queryset list which is not json serializeable
+	if rooms:									#only if there exists a entry 
+		rooms = rooms[0].Rooms.all().values()		#turns queryset into python dictionary type
+		context['1'] = []
+		for i in rooms:
+			context['1'].append(i['roomId'])
+	
+	rooms = inst.filter(time2 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['2'] = []
+		for i in rooms:
+			context['2'].append(i['roomId'])
 
-	rooms = inst.filter(time__time1 = True)
-	rooms = rooms.values()
-	context['1'] = []
-	for i in rooms:
-		context['1'].append(i['roomId'])
+	rooms = inst.filter(time3 = True)			
+	if rooms:
+		rooms = rooms[0].Rooms.all().values()
+		context['3'] = []
+		for i in rooms:
+			context['3'].append(i['roomId'])
 
-	rooms = inst.filter(time__time2 = True)
-	rooms = rooms.values()
-	context['2'] = []
-	for i in rooms:
-		context['2'].append(i['roomId'])
+	rooms = inst.filter(time4 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['4'] = []
+		for i in rooms:
+			context['4'].append(i['roomId'])
 
-	rooms = inst.filter(time__time3 = True)
-	rooms = rooms.values()
-	context['3'] = []
-	for i in rooms:
-		context['3'].append(i['roomId'])
+	rooms = inst.filter(time5 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['5'] = []
+		for i in rooms:
+			context['5'].append(i['roomId'])
 
-	rooms = inst.filter(time__time4 = True)
-	rooms = rooms.values()
-	context['4'] = []
-	for i in rooms:
-		context['4'].append(i['roomId'])
+	rooms = inst.filter(time6 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['6'] = []
+		for i in rooms:
+			context['6'].append(i['roomId'])
 
-	rooms = inst.filter(time__time5 = True)
-	rooms = rooms.values()
-	context['5'] = []
-	for i in rooms:
-		context['5'].append(i['roomId'])
+	rooms = inst.filter(time7 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['7'] = []
+		for i in rooms:
+			context['7'].append(i['roomId'])
 
-	rooms = inst.filter(time__time6 = True)
-	rooms = rooms.values()
-	context['6'] = []
-	for i in rooms:
-		context['6'].append(i['roomId'])
+	rooms = inst.filter(time8 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['8'] = []
+		for i in rooms:
+			context['8'].append(i['roomId'])
 
-	rooms = inst.filter(time__time7 = True)
-	rooms = rooms.values()
-	context['7'] = []
-	for i in rooms:
-		context['7'].append(i['roomId'])
+	rooms = inst.filter(time9 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['9'] = []
+		for i in rooms:
+			context['9'].append(i['roomId'])
 
-	rooms = inst.filter(time__time8 = True)
-	rooms = rooms.values()
-	context['8'] = []
-	for i in rooms:
-		context['8'].append(i['roomId'])
+	rooms = inst.filter(time10 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['10'] = []
+		for i in rooms:
+			context['10'].append(i['roomId'])
 
-	rooms = inst.filter(time__time9 = True)
-	rooms = rooms.values()
-	context['9'] = []
-	for i in rooms:
-		context['9'].append(i['roomId'])
+	rooms = inst.filter(time11 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['11'] = []
+		for i in rooms:
+			context['11'].append(i['roomId'])
 
-	rooms = inst.filter(time__time10 = True)
-	rooms = rooms.values()
-	context['10'] = []
-	for i in rooms:
-		context['10'].append(i['roomId'])
-
-	rooms = inst.filter(time__time11 = True)
-	rooms = rooms.values()
-	context['11'] = []
-	for i in rooms:
-		context['11'].append(i['roomId'])
-
-	rooms = inst.filter(time__time12 = True)
-	rooms = rooms.values()
-	context['12'] = []
-	for i in rooms:
-		context['12'].append(i['roomId'])
+	rooms = inst.filter(time12 = True)			
+	if rooms:	
+		rooms = rooms[0].Rooms.all().values()
+		context['12'] = []
+		for i in rooms:
+			context['12'].append(i['roomId'])
 
 	print context
-
 	return JsonResponse(context)
