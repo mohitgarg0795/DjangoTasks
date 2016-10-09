@@ -84,7 +84,7 @@ def update(request):
 		inst.time = timeObj
 		inst.save();
 		
-	return HttpResponse("garg")
+	return HttpResponse("1")
 	
 
 def fetch(request):

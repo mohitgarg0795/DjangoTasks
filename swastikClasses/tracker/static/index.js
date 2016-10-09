@@ -31,6 +31,7 @@ $(document).ready(function(){
 			stat='pm';
 		}
 		time=time+stat;
+		console.log(timeArray);
 		for(var i=0;i<timeArray.length;i++)
 		{
 			if($('.'+timeArray[i]).hasClass(time))
@@ -42,7 +43,10 @@ $(document).ready(function(){
 			else
 			{
 				$('.'+timeArray[i]).addClass('locked');
-				$('.'+timeArray[i]).children().remove();
+				for(var j=0;j<$('.'+timeArray[i]).children().length;j++)
+				{
+					$($($('.'+timeArray[i])[j]).children()[0]).remove();
+				}
 			}
 		}
 		$('.timeLabel').removeClass('locked');
@@ -50,8 +54,6 @@ $(document).ready(function(){
 	}
 
 	function createMatrix(){
-
-		// TODO before creating the matrix fetch data from the server 
 
 		for(var i=0;i<13;i++)
 		{
@@ -84,6 +86,7 @@ $(document).ready(function(){
 					var classTaken=document.createElement('div');
 					var classMissed=document.createElement('div');
 					var classStat=document.createElement('div');
+					$(classStat).addClass('classStat');
 					$(classTaken).addClass('classTaken fa fa-check');
 					$(classMissed).addClass('classMissed fa fa-times');
 					$(optionsContainer).append(classTaken);
@@ -98,6 +101,35 @@ $(document).ready(function(){
 		}
 		var firstCell=$('.ccol')[0]; // hide first column
 		firstCell.className+=' hiddenCell';
+
+		$.ajax({
+			url:'fetch',
+			method:'GET',
+			success:function(data){
+				console.log(data);
+				var time=Object.keys(data);
+				 myMap={};
+				for(var i=0;i<time.length;i++)
+				{
+					var ctime=time[i];
+					var rooms=data[ctime];
+					myMap[ctime]={};
+					for(var j=0;j<rooms.length;j++)
+					{
+						myMap[ctime][rooms[j]]='true';
+					}
+				}
+				for(var i=0;i<$('.classStat').length;i++)
+				{
+					var targetElement=$($('.classStat')[i]).parent();
+					var time=targetElement.attr('time').substr(0,targetElement.attr('time').length-2);
+					var room=targetElement.attr('room');
+					if(myMap[time][room]!=undefined){
+						$($('.classStat')[i]).text('Class Taken');
+					}
+				}
+			}
+		});
 	}
 
 	$('.classTaken').on('click',function(){
@@ -130,6 +162,7 @@ $(document).ready(function(){
 				i+=1;
 			}
 		//console.log(classes);
+		console.log(time);
 		$.ajax({url: "update", type: 'GET', data: {'classes': classes, 'time': time}});
 		//send_text();
 
