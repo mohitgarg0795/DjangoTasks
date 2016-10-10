@@ -12,6 +12,8 @@ class Rooms(models.Model):
 class Time(models.Model):
 	Rooms = models.ManyToManyField(Rooms)
 	date = models.DateField()
+	time = models.CharField(max_length=2)
+	"""
 	time9 = models.BooleanField(default = False)
 	time10 = models.BooleanField(default = False)
 	time11 = models.BooleanField(default = False)
@@ -24,7 +26,7 @@ class Time(models.Model):
 	time6 = models.BooleanField(default = False)
 	time7 = models.BooleanField(default = False)
 	time8 = models.BooleanField(default = False)
-
+	"""
 	def __unicode__(self):
-		return str(self.date)
+		return "date : " + str(self.date) + " time : " + self.time
 	

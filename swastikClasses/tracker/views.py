@@ -14,6 +14,11 @@ def update(request):
 	#print date.today
 	#print datetime.now()
 	
+	timeObj = Time.objects.get_or_create(date = Date, time = time[:-2])[0]
+	timeObj.Rooms.clear()
+	print timeObj.Rooms.all()
+
+	"""
 	key = 'time' + time[:-2]
 	if key=='time1':
 		try:
@@ -77,9 +82,11 @@ def update(request):
 			timeObj = Time.objects.create(date = Date, time12 = True)
 
 	timeObj.Rooms.clear()
-
+	print timeObj.Rooms.all()
+	timeObj.save()
+	"""
 	for roomId in rooms:
-		print roomId
+		#print roomId
 		try:
 			inst = Rooms.objects.get(roomId = roomId)
 		except:
@@ -88,7 +95,6 @@ def update(request):
 	timeObj.save()
 
 	print timeObj.Rooms.all()
-
 	return HttpResponse("1")
 	
 
@@ -98,7 +104,11 @@ def fetch(request):
 	context = {}
 
 	inst = Time.objects.filter(date = Date)
+
+	for i in inst:
+		context[i.time] = [room['roomId'] for room in i.Rooms.all().values()]
 	
+	"""
 	rooms = inst.filter(time1 = True)			#return queryset list which is not json serializeable
 	if rooms:									#only if there exists a entry 
 		rooms = rooms[0].Rooms.all().values()		#turns queryset into python dictionary type
@@ -182,6 +192,6 @@ def fetch(request):
 		context['12'] = []
 		for i in rooms:
 			context['12'].append(i['roomId'])
-
+	"""
 	print context
 	return JsonResponse(context)
