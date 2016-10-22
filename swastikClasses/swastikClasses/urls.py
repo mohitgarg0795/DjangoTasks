@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^fetch$', tviews.fetch),
 	url(r'^$', tviews.index),
     url(r'^manager$', mviews.index),
+    url(r'^updateData$', mviews.updateData),
+    url(r'^openSheet$', mviews.openSheet),
 ]
