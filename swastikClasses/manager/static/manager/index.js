@@ -46,7 +46,7 @@ $(document).ready(function(){
 			renderMatrix();
 		}
 		else{
-			var rowNumber=$('.active')[0].id.split('x')[0];
+			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
 			var cols=matrix[0].length;
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
@@ -63,7 +63,7 @@ $(document).ready(function(){
 			renderMatrix();
 		}
 		else{
-			var rowNumber=$('.active')[0].id.split('x')[0];
+			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
 			var cols=matrix[0].length;
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
@@ -80,13 +80,14 @@ $(document).ready(function(){
 			renderMatrix();
 		}
 		else{
-			var colNumber=$('.active')[0].id.split('x')[1];
+			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
 			{
 				matrix[i]=matrix[i].slice(0,colNumber).concat([undefined],matrix[i].slice(colNumber,matrix[i].length));
 			}
 			renderMatrix();
+			saveInstantState(colNumber);
 		}
 	});
 	$('.insertColAfter').on('click',function(){
@@ -95,13 +96,14 @@ $(document).ready(function(){
 			renderMatrix();
 		}
 		else{
-			var colNumber=$('.active')[0].id.split('x')[1];
+			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
 			{
 				matrix[i]=matrix[i].slice(0,colNumber+1).concat([undefined],matrix[i].slice(colNumber+1,matrix[i].length));
 			}
 			renderMatrix();
+			saveInstantState(colNumber+1);
 		}
 	});
 	$('.save').on('click',function(){saveSheet();});
@@ -135,6 +137,7 @@ function renderMatrix(){
 	}
 	$('#'+activeId).addClass('active');
 }
+
 
 function saveSheet(){
 	var data=[];
@@ -182,6 +185,13 @@ function openSheet(d){
 			renderMatrix();
 		}
 	});
+}
+
+function saveInstantState(colNo){
+	//colNo contains the column number such that the range [colNo,totalcols] are to be incremented
+
+	// $.ajax()
+	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
 
 //$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});
