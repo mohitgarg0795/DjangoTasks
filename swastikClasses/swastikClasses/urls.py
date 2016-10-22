@@ -16,11 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import tracker.views as views
+import tracker.views as tviews
+import manager.views as mviews
 
 urlpatterns = [
 	url(r'^admin/', admin.site.urls),
-	url(r'^update$', views.update),
-    url(r'^fetch$', views.fetch),
-	url(r'^$', views.index),
+	url(r'^update$', tviews.update),
+    url(r'^fetch$', tviews.fetch),
+	url(r'^$', tviews.index),
+    url(r'^manager$', mviews.index),
 ]
