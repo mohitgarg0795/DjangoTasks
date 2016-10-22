@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
-# Create your views here.
+
 
 client = MongoClient()
 
@@ -13,20 +13,20 @@ def openSheet(request):
 	if request.GET['queryType']=='fetchNames':
 		return HttpResponse(json.dumps(client.database_names()))
 
-	sheetName = request.GET['sheetName']
-	db = client[sheetName]	
-	colIdx = db['colidx']
-	data = db['data']
-	
-	context = {}
+	if request.GET['queryType']=='openSheet':
+		sheetName = request.GET['sheetName']
+		db = client[sheetName]	
+		colIdx = db['colidx']
+		data = db['data']
+		
+		context = {}
 
-	for i in data.find():
-		colId = i['colId']
-		col = colIdx.find({'colId': colId})[0]['colIdx']
-		context[col]=i['val']
+		for i in data.find():
+			colId = i['colId']
+			col = colIdx.find({'colId': colId})[0]['colIdx']
+			context[col]=i['val']
 
-	print context
-	return JsonResponse(context)
+		return JsonResponse(context)
 
 def updateData(request):
 	sheetName = request.GET['sheetName']
@@ -54,5 +54,34 @@ def updateData(request):
 					"val": request.GET.getlist(i)	
 				})
 			#print i, request.GET.getlist(i)
+	else:
+		
+
+	return HttpResponse("success")
+
+def addCol(request):
+	sheetName = request.GET['sheetName']
+	newCol  = request.GET['col']
+
+	db = client[sheetName]
+	colIdx = db['colidx']
+	data = db['data']
+	totalCol = colIdx.count()
+
+	colIdx.updateMany(
+			{'colId': { '$gt': newCol}},
+			{'colIdx': { '$inc': { colIdx: 1}}}
+		)
+
+	colIdx.insert_one({
+			"colId": totalCol+1,
+			"colIdx": newCol
+		})
+
+	numOfRows = len(data.find()[0]['val'])
+	data.insert_one({
+			"colId": totalCol+1,
+			"val": ['' for i in range(0,len)]
+		})
 
 	return HttpResponse("success")

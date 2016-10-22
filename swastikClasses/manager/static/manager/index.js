@@ -157,7 +157,7 @@ function openSheet(d){
 	$.ajax({
 		url:'openSheet',
 		type:'GET',
-		data:{'queryType':"",'sheetName':d.id},
+		data:{'queryType':"openSheet",'sheetName':d.id},
 		success:function(data){
 			sheetName=d.id;
 			var keys=Object.keys(data);
