@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from mongoengine import connect
 
 #connect(host = '127.0.0.1', username='root', password='root')
-connect('swastikClasses')
+#connect('swastikClasses')
 #SESSION_ENGINE = 'mongoengine.django.sessions'
 #SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 # Quick-start development settings - unsuitable for production

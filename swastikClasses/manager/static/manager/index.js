@@ -1,4 +1,3 @@
-
 var matrix=undefined;
 var active=undefined;
 
@@ -113,4 +112,7 @@ function saveSheet(){
 		}
 	}
 	console.log(data);
+	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'sheetName': "sheetName"}, success: function(data){console.log(data)}});
 }
+
+//$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});
