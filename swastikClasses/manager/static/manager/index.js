@@ -1,7 +1,45 @@
 var matrix=undefined;
 var active=undefined;
+var sheetName=undefined;
 
 $(document).ready(function(){
+	var existingSheets="";
+	$.ajax({
+		url:'/openSheet',
+		data:{"queryType":"fetchNames"},
+		success:function(data){existingSheets=data.split('[').join('').split(']').join('').split('"').join('').split(' ').join('').split(',')}
+	});
+	$('.createNewSheet').on('click',function(){
+		var name=prompt('Enter sheet name');
+		if(name.length<=0){
+			alert('Not a valid sheet name');
+		}
+		else
+		if(existingSheets.indexOf(name)>=0){
+			alert('Sheet with name '+name+' already exists');
+		}
+		else{
+			sheetName=name;
+			matrix=undefined;
+			$('.beginOptions').hide();
+			$('.sheetContent').show();
+			document.title=sheetName;
+		}
+	});
+	$('.openExistingSheet').on('click',function(){
+		$('.beginOptions').hide();
+		$('.sheet').remove();
+		for(var i=0;i<existingSheets.length;i++)
+		{
+			var d=document.createElement('div');
+			$(d).text(existingSheets[i]);
+			$(d).addClass('sheet');
+			d.id=existingSheets[i];
+			$(d).on('click',function(){openSheet(this);$('.existingSheetContainer').hide();$('.sheetContent').show();});
+			$('.sheetPanel').append(d);
+		}
+		$('.existingSheetContainer').show();
+	});
 	$('.insertRowBefore').on('click',function(){
 		if(matrix==undefined){
 			matrix=[[undefined]];
@@ -111,8 +149,39 @@ function saveSheet(){
 			data[j].push(matrix[i][j]);
 		}
 	}
-	console.log(data);
-	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'sheetName': "sheetName"}, success: function(data){console.log(data)}});
+	console.log(sheetName);
+	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'sheetName': sheetName}});
+}
+
+function openSheet(d){
+	$.ajax({
+		url:'openSheet',
+		type:'GET',
+		data:{'queryType':"",'sheetName':d.id},
+		success:function(data){
+			sheetName=d.id;
+			var keys=Object.keys(data);
+			var nrows=data[keys[0]].length;
+			var ncols=keys.length;
+			matrix=[];
+			for(var i=0;i<nrows;i++)
+			{
+				matrix.push([]);
+				for(var j=0;j<ncols;j++)
+				{
+					matrix[i].push(undefined);
+				}
+			}
+			for(var i=0;i<keys.length;i++)
+			{
+				for(var j=0;j<data[keys[i]].length;j++)
+				{
+					matrix[j][keys[i]]=data[keys[i]][j];
+				}
+			}
+			renderMatrix();
+		}
+	});
 }
 
 //$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});

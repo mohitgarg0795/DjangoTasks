@@ -10,12 +10,14 @@ def index(request):
 	return render(request,"manager/index.html")
 
 def openSheet(request):
-	if request.GET['id']=='fetchNames':
+	if request.GET['queryType']=='fetchNames':
 		return HttpResponse(json.dumps(client.database_names()))
 
 	sheetName = request.GET['sheetName']
 	db = client[sheetName]	
-
+	colIdx = db['colidx']
+	data = db['data']
+	
 	context = {}
 
 	for i in data.find():

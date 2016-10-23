@@ -3,7 +3,71 @@ html,body {
   height:100vh;
   margin:0px;
   background:#F6F6F6;
+}
+
+.beginOptions {
+	display: inline-block;
+	width:40%;
+	padding:40px;
+	background:#1E1E1E;
+	margin-top:16%;
+	color:white;
+	border-radius: 10px;
 } 
+
+.beginOptionsIntro {
+	font-weight:bold;
+	font-size:20px; 
+}
+
+.existingSheetContainer {
+	display:none;
+	width:100%;
+	height:100vh;
+	background:black;
+}
+
+.sheetPanel {
+	display: inline-block;
+	background:#004499;
+	padding:20px;
+}
+
+.sheet {
+	color:white;
+	font-weight:bold;
+	font-size:20px;
+	padding:10px;
+	cursor:pointer;
+}
+
+.sheet:hover {
+	background:#001E56;
+}
+
+.createNewSheet {
+	float:left;
+	margin-left:20px;
+	margin-top:40px;
+	background:#F83535;
+	padding:10px;
+	border-radius: 10px;
+	cursor:pointer;
+}
+
+.openExistingSheet {
+	float:right;
+	margin-right:20px;
+	margin-top:40px;
+	background:#1FDCED;
+	padding:10px;
+	border-radius: 10px;
+	cursor:pointer;
+}
+
+.sheetContent {
+	display:none;
+}
 
 .header {
 	width:100%;
@@ -33,12 +97,10 @@ html,body {
 
 .sheetContainer {
 	padding:20px;
-	width:100%;
 	background: #FFFFFF;
 }
 
 .row {
-	width:100%;
 	height:40px;
 }
 
