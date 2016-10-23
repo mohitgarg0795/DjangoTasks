@@ -87,6 +87,7 @@ $(document).ready(function(){
 				matrix[i]=matrix[i].slice(0,colNumber).concat([undefined],matrix[i].slice(colNumber,matrix[i].length));
 			}
 			renderMatrix();
+			saveInstantState(colNumber);
 		}
 	});
 	$('.insertColAfter').on('click',function(){
@@ -102,6 +103,7 @@ $(document).ready(function(){
 				matrix[i]=matrix[i].slice(0,colNumber+1).concat([undefined],matrix[i].slice(colNumber+1,matrix[i].length));
 			}
 			renderMatrix();
+			saveInstantState(colNumber+1);
 		}
 	});
 	$('.save').on('click',function(){saveSheet();});
@@ -182,6 +184,12 @@ function openSheet(d){
 			renderMatrix();
 		}
 	});
+}
+
+function saveInstantState(colNo){
+	//colNo contains the column number such that the range [colNo,totalcols] are to be incremented
+	
+	// $.ajax()
 }
 
 //$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});
