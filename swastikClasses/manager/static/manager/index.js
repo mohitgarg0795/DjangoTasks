@@ -44,6 +44,7 @@ $(document).ready(function(){
 		if(matrix==undefined){
 			matrix=[[undefined]];
 			renderMatrix();
+			saveInstantState(0);
 		}
 		else{
 			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
@@ -61,6 +62,7 @@ $(document).ready(function(){
 		if(matrix==undefined){
 			matrix=[[undefined]];
 			renderMatrix();
+			saveInstantState(0);
 		}
 		else{
 			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
@@ -78,6 +80,7 @@ $(document).ready(function(){
 		if(matrix==undefined){
 			matrix=[[undefined]];
 			renderMatrix();
+			saveInstantState(0);
 		}
 		else{
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
@@ -94,6 +97,7 @@ $(document).ready(function(){
 		if(matrix==undefined){
 			matrix=[[undefined]];
 			renderMatrix();
+			saveInstantState(0);
 		}
 		else{
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
@@ -188,6 +192,7 @@ function openSheet(d){
 }
 
 function saveInstantState(colNo){
+	console.log(colNo);
 	//colNo contains the column number such that the range [colNo,totalcols] are to be incremented
 
 	// $.ajax()
