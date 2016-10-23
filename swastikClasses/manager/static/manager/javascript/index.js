@@ -252,5 +252,5 @@ $('.deleteCol').on('click',function(){
 });
 
 function saveDeleteState(colNumber){
-	//$.ajax({});
+	$.ajax({url: "delCol", type: 'GET', data: {'sheetName': fjdjkj, 'col': colNo}, success: function(data){console.log(data)}});
 }

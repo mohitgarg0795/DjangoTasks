@@ -118,6 +118,37 @@ def addCol(request):
 			"val": ['' for i in range(0,numOfRows)]
 		})
 
+	#for i in data.find():
+	#	print i
+
+	return HttpResponse("success")
+
+def deleteCol(request):
+	sheetName = request.GET['sheetName']
+	delCol  = request.GET['col']		# gives a unicode string
+	delCol = int(delCol)		# index of column to be deleted
+
+	db = client[sheetName]
+	colIdx = db['colidx']
+	data = db['data']
+	totalCol = colIdx.count()
+
+	for i in col.find():
+		print i
+	print ""
+
+	delId = colIdx.find({'colIdx': delCol})[0]['colId']		# column id of the column to be deleted
+	colIdx.remove({'colIdx': delCol})		# removes all documents with coldIdx=delCol , although here it is always one document
+	data.remove({'ColId': delId})			# removes the data document of the deleted column
+	for i in range(delCol+1,totalCol):		# update colIdx of all colIds with index = {col deleted	+ 1 , totalCol -1 i.e. highest index of col}
+		colIdx.update(
+				{'colIdx': i},
+				{'$inc': {'colIdx': -1}}
+			)
+
+	for i in col.find():
+		print i
+	print ""
 	for i in data.find():
 		print i
 
