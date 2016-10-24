@@ -106,16 +106,16 @@ def addCol(request):
 
 	#for i in colIdx.find():
 	#	print i
-
-	numOfRows = len(data.find()[0]['val'])
+	try:
+		numOfRows = len(data.find()[0]['val'])
+	except: 
+		numOfRows = 1
 	data.insert_one({
 			"colId": totalCol,
 			"val": ['' for i in range(0,numOfRows)]
 		})
-	
-	#print colIdx.count(), data.count()
 
-	#for i in data.find():
-	#	print i
+	for i in data.find():
+		print i
 
 	return HttpResponse("success")
