@@ -1,7 +1,6 @@
 
 .beginOptions {
-	display:none;
-	/*display: inline-block;*/
+	display: inline-block;
 	width:40%;
 	padding:40px;
 	background:#1E1E1E;
