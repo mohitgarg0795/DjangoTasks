@@ -59,6 +59,9 @@ def updateData(request):
 			if(i=='sheetName'):
 				continue
 			idx = int(i[6])
+			print('------------')
+			print(colIdx.find({'colIdx': idx}))
+			print('------------')
 			colId = colIdx.find({'colIdx': idx})[0]['colId']
 			data.update(
 					{'colId': colId},			# match condition to find the document to be updated

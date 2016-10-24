@@ -7,7 +7,7 @@ $(document).ready(function(){
 	$.ajax({
 		url:'/openSheet',
 		data:{"queryType":"fetchNames"},
-		success:function(data){existingSheets=data.split('[').join('').split(']').join('').split('"').join('').split(' ').join('').split(',')}
+		success:function(data){existingSheets=data.split('[').join('').split(']').join('').split('"').join('').split(' ').join('').split(',');existingSheets.sort();}
 	});
 	$('.createNewSheet').on('click',function(){
 		var name=prompt('Enter sheet name');
@@ -133,6 +133,7 @@ function renderMatrix(){
 			$(c)[0].id=i+'x'+j;
 			$(c).attr('contenteditable','true');
 			$(c).on('click',function(){$('.active').removeClass('active');$(this).addClass('active');});
+			$(c).on('contextmenu',function(e){e.preventDefault();showToolBox(e);});
 			$(c).on('keydown',function(){var r=this.id.split('x')[0];var c=this.id.split('x')[1];matrix[r][c]=$(this).text();})
 			$(c).on('keyup',function(){var r=this.id.split('x')[0];var c=this.id.split('x')[1];matrix[r][c]=$(this).text();})
 			$(r).append(c);
@@ -141,7 +142,6 @@ function renderMatrix(){
 	}
 	$('#'+activeId).addClass('active');
 }
-
 
 function saveSheet(){
 	var data=[];
@@ -199,4 +199,58 @@ function saveInstantState(colNo){
 	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
 
-//$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});
+var toolboxRow="";
+var toolboxColumn="";
+
+function showToolBox(e){
+	var x=e.clientX;
+	var y=e.clientY;
+	toolboxRow=parseInt(e.target.id.split('x')[0]);
+	toolboxColumn=parseInt(e.target.id.split('x')[1]);
+	$('.toolbox').css({'display':'inline-block','left':x+'px','top':y+'px'});
+	$(document).on('click',function(){	$('.toolbox').css({'display':'none'});})
+}
+
+$('.deleteRow').on('mouseenter',function(){
+	$('.highlight').removeClass('highlight');
+	var numCols=matrix[0].length;
+	for(var i=0;i<numCols;i++)
+	{
+		$('#'+toolboxRow+'x'+i).addClass('highlight');
+	}
+});
+
+$('.deleteRow').on('mouseout',function(){
+	$('.highlight').removeClass('highlight');
+});
+
+$('.deleteCol').on('mouseenter',function(){
+	$('.highlight').removeClass('highlight');
+	var numRows=matrix.length;
+	for(var i=0;i<numRows;i++)
+	{
+		$('#'+i+'x'+toolboxColumn).addClass('highlight');
+	}
+});
+
+$('.deleteCol').on('mouseout',function(){
+	$('.highlight').removeClass('highlight');
+});
+
+$('.deleteRow').on('click',function(){
+		matrix=matrix.slice(0,toolboxRow).concat(matrix.slice(toolboxRow+1,matrix.length));
+		renderMatrix();
+});
+
+$('.deleteCol').on('click',function(){
+		for(var i=0;i<matrix.length;i++)
+		{
+			matrix[i]=matrix[i].slice(0,toolboxColumn).concat(matrix[i].slice(toolboxColumn+1,matrix[i].length));
+		}
+		renderMatrix();
+		saveDeleteState(toolboxColumn);
+});
+
+function saveDeleteState(colNumber){
+	//$.ajax({});
+}

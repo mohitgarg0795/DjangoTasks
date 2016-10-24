@@ -1,0 +1,22 @@
+
+.toolbox {
+	display: none;
+	position:absolute;
+	color:white !important;
+	background:#292929;
+	padding:10px;
+}
+
+.toolboxOptions {
+	padding:10px;
+	transition:background 0.4s;
+}
+
+.toolboxOptions:hover {
+	background: #545454;
+}
+
+.highlight {
+	background:#181818;
+	transition:background 0.4s;
+}

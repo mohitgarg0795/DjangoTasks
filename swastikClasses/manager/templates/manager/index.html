@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="{{STATIC_URL}}/static/manager/bootstrap-4.0.0-alpha.2/dist/css/bootstrap.min.css"></link>
-  <link rel="stylesheet" href="{{STATIC_URL}}/static/manager/index.css"></link>
+  <link rel="stylesheet" href="{{STATIC_URL}}/static/manager/css/index.css"></link>
   <link rel="stylesheet" href="{{STATIC_URL}}/static/manager/font-awesome-4.6.3/css/font-awesome.min.css" /></link>
   <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
   <title>Welcome</title>
@@ -20,6 +20,11 @@
   <div class='existingSheetContainer'>
     <div class='sheetPanel'>
     </div>
+  </div>
+  <div class='toolbox'>
+    <div class="toolboxOptions fa fa-times deleteRow" title="delete row"></div>
+    <div class="toolboxOptions fa fa-times deleteCol" title="delete column"></div>
+    <div class="toolboxOptions fa fa-plus addHeading" title="add heading"></div>
   </div>
   <div class='sheetContent'>
    	<div class='header'>
@@ -39,5 +44,5 @@
 </center>
 </body>
 <script src="{{STATIC_URL}}/static/manager/jquery-2.2.3.min.js"></script>
-<script src="{{STATIC_URL}}/static/manager/index.js"></script>
+<script src="{{STATIC_URL}}/static/manager/javascript/index.js"></script>
 </html>
