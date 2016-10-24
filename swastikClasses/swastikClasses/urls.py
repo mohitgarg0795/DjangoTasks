@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^manager$', mviews.index),
     url(r'^updateData$', mviews.updateData),
     url(r'^openSheet$', mviews.openSheet),
+    url(r'^addCol$', mviews.addCol),
 ]

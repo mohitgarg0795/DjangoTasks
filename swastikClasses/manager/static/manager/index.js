@@ -138,6 +138,7 @@ function renderMatrix(){
 	$('#'+activeId).addClass('active');
 }
 
+
 function saveSheet(){
 	var data=[];
 	for(var i=0;i<matrix[0].length;i++)
@@ -159,7 +160,7 @@ function openSheet(d){
 	$.ajax({
 		url:'openSheet',
 		type:'GET',
-		data:{'queryType':"",'sheetName':d.id},
+		data:{'queryType':"openSheet",'sheetName':d.id},
 		success:function(data){
 			sheetName=d.id;
 			var keys=Object.keys(data);
@@ -189,8 +190,9 @@ function openSheet(d){
 function saveInstantState(colNo){
 	console.log(colNo);
 	//colNo contains the column number such that the range [colNo,totalcols] are to be incremented
-	
+
 	// $.ajax()
+	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
 
 //$.ajax({url: "openSheet", type: 'GET', data: {'id': " **** "}});
