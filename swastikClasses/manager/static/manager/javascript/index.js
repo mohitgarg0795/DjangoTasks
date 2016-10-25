@@ -83,6 +83,7 @@ $(document).ready(function(){
 			saveInstantState(0);
 		}
 		else{
+			$('.lockScreen').show();
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
@@ -100,6 +101,7 @@ $(document).ready(function(){
 			saveInstantState(0);
 		}
 		else{
+			$('.lockScreen').show();
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
@@ -156,7 +158,6 @@ function saveSheet(){
 			data[j].push(matrix[i][j]);
 		}
 	}
-	console.log(sheetName);
 	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'sheetName': sheetName}});
 }
 
@@ -192,11 +193,7 @@ function openSheet(d){
 }
 
 function saveInstantState(colNo){
-	console.log(colNo);
-	//colNo contains the column number such that the range [colNo,totalcols] are to be incremented
-
-	// $.ajax()
-	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
+	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){$('.lockScreen').hide();}});
 }
 
 var toolboxRow="";
@@ -254,3 +251,8 @@ $('.deleteCol').on('click',function(){
 function saveDeleteState(colNo){
 	$.ajax({url: "delCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
+
+$(document).on('click',function(e){
+	console.log('running');
+	e.preventDefault();
+})

@@ -12,6 +12,15 @@ html,body {
   background:#F6F6F6;
 }
 
+.lockScreen {
+	position:absolute;
+	display: none;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100vh;
+	cursor:not-allowed;
+}
 
 
 
