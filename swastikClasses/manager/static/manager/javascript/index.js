@@ -42,7 +42,8 @@ $(document).ready(function(){
 	});
 	$('.insertRowBefore').on('click',function(){
 		if(matrix==undefined){
-			matrix=[[undefined]];
+			$('.lockScreen').show();
+			matrix=[[{'data':undefined,'heading':undefined}]];
 			renderMatrix();
 			saveInstantState(0);
 		}
@@ -52,7 +53,7 @@ $(document).ready(function(){
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
 			{
-				tempArray[0].push(undefined);
+				tempArray[0].push({'data':undefined,'heading':undefined});
 			}
 			matrix=matrix.slice(0,rowNumber).concat(tempArray,matrix.slice(rowNumber,matrix.length));
 			renderMatrix();
@@ -60,7 +61,8 @@ $(document).ready(function(){
 	});
 	$('.insertRowAfter').on('click',function(){
 		if(matrix==undefined){
-			matrix=[[undefined]];
+			$('.lockScreen').show();
+			matrix=[[{'data':undefined,'heading':undefined}]];
 			renderMatrix();
 			saveInstantState(0);
 		}
@@ -70,7 +72,7 @@ $(document).ready(function(){
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
 			{
-				tempArray[0].push(undefined);
+				tempArray[0].push({'data':undefined,'heading':undefined});
 			}
 			matrix=matrix.slice(0,rowNumber+1).concat(tempArray,matrix.slice(rowNumber+1,matrix.length));
 			renderMatrix();
@@ -78,7 +80,8 @@ $(document).ready(function(){
 	});
 	$('.insertColBefore').on('click',function(){
 		if(matrix==undefined){
-			matrix=[[undefined]];
+			$('.lockScreen').show();
+			matrix=[[{'data':undefined,'heading':undefined}]];
 			renderMatrix();
 			saveInstantState(0);
 		}
@@ -88,7 +91,7 @@ $(document).ready(function(){
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
 			{
-				matrix[i]=matrix[i].slice(0,colNumber).concat([undefined],matrix[i].slice(colNumber,matrix[i].length));
+				matrix[i]=matrix[i].slice(0,colNumber).concat([{'data':undefined,'heading':undefined}],matrix[i].slice(colNumber,matrix[i].length));
 			}
 			renderMatrix();
 			saveInstantState(colNumber);
@@ -96,7 +99,8 @@ $(document).ready(function(){
 	});
 	$('.insertColAfter').on('click',function(){
 		if(matrix==undefined){
-			matrix=[[undefined]];
+			$('.lockScreen').show();
+			matrix=[[{'data':undefined,'heading':undefined}]];
 			renderMatrix();
 			saveInstantState(0);
 		}
@@ -106,7 +110,7 @@ $(document).ready(function(){
 			var rows=matrix.length;
 			for(var i=0;i<rows;i++)
 			{
-				matrix[i]=matrix[i].slice(0,colNumber+1).concat([undefined],matrix[i].slice(colNumber+1,matrix[i].length));
+				matrix[i]=matrix[i].slice(0,colNumber+1).concat([{'data':undefined,'heading':undefined}],matrix[i].slice(colNumber+1,matrix[i].length));
 			}
 			renderMatrix();
 			saveInstantState(colNumber+1);
@@ -130,14 +134,28 @@ function renderMatrix(){
 		for(var j=0;j<cols;j++)
 		{
 			var c=document.createElement('div');
+			var data=document.createElement('div');
+			var heading=document.createElement('div');
 			$(c).addClass('col');
-			$(c).text(matrix[i][j]);
+			$(c).append(heading);
+			$(c).append(data);
+			$(data)[0].id='data'+i+'x'+j;
+			$(heading)[0].id='heading'+i+'x'+j;
+			$(data).addClass('data');
+			$(heading).addClass('heading');
+			try{$(data).text(matrix[i][j].data);}catch(e){$(data).text(undefined);}
+			try{$(heading).text(matrix[i][j].heading);}catch(e){$(heading).text(undefined);}
+			if(matrix[i][j]['heading']!=undefined&&matrix[i][j]['heading'].length>0){
+				$(heading).css({'display':'inline-block'});
+			}
 			$(c)[0].id=i+'x'+j;
-			$(c).attr('contenteditable','true');
+			$(c).append(data);
+			$(c).append(heading);
+			$(data).attr('contenteditable','true');
 			$(c).on('click',function(){$('.active').removeClass('active');$(this).addClass('active');});
 			$(c).on('contextmenu',function(e){e.preventDefault();showToolBox(e);});
-			$(c).on('keydown',function(){var r=this.id.split('x')[0];var c=this.id.split('x')[1];matrix[r][c]=$(this).text();})
-			$(c).on('keyup',function(){var r=this.id.split('x')[0];var c=this.id.split('x')[1];matrix[r][c]=$(this).text();})
+			$(data).on('keydown',function(){var r=this.parentElement.id.split('x')[0];var c=this.parentElement.id.split('x')[1];matrix[r][c].data=$(this).text();})
+			$(data).on('keyup',function(){var r=this.parentElement.id.split('x')[0];var c=this.parentElement.id.split('x')[1];matrix[r][c].data=$(this).text();})
 			$(r).append(c);
 		}
 		$('.sheetContainer').append(r);
@@ -147,18 +165,21 @@ function renderMatrix(){
 
 function saveSheet(){
 	var data=[];
+	var heading=[];
 	for(var i=0;i<matrix[0].length;i++)
 	{
 		data.push([]);
+		heading.push([]);
 	}
 	for(var i=0;i<matrix.length;i++)
 	{
 		for(var j=0;j<matrix[i].length;j++)
 		{
-			data[j].push(matrix[i][j]);
+			data[j].push(matrix[i][j].data);
+			heading[j].push(matrix[i][j].heading);
 		}
 	}
-	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'sheetName': sheetName}});
+	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'heading':heading 'sheetName': sheetName}});
 }
 
 function openSheet(d){
@@ -177,14 +198,15 @@ function openSheet(d){
 				matrix.push([]);
 				for(var j=0;j<ncols;j++)
 				{
-					matrix[i].push(undefined);
+					matrix[i].push({'data':undefined,'heading':undefined});
 				}
 			}
 			for(var i=0;i<keys.length;i++)
 			{
 				for(var j=0;j<data[keys[i]].length;j++)
 				{
-					matrix[j][keys[i]]=data[keys[i]][j];
+					matrix[j][keys[i]].data=data[keys[i]][j];
+					// wont work until backend modified matrix[j][keys[i]].heading=heading[keys[i]][j];
 				}
 			}
 			renderMatrix();
@@ -202,8 +224,13 @@ var toolboxColumn="";
 function showToolBox(e){
 	var x=e.clientX;
 	var y=e.clientY;
-	toolboxRow=parseInt(e.target.id.split('x')[0]);
-	toolboxColumn=parseInt(e.target.id.split('x')[1]);
+	var currentTarget=e.target;
+	if(currentTarget.id.indexOf('data')>=0||currentTarget.id.indexOf('heading')>=0){
+		currentTarget=currentTarget.parentElement;
+	}
+	console.log(currentTarget);
+	toolboxRow=parseInt(currentTarget.id.split('x')[0]);
+	toolboxColumn=parseInt(currentTarget.id.split('x')[1]);
 	$('.toolbox').css({'display':'inline-block','left':x+'px','top':y+'px'});
 	$(document).on('click',function(){	$('.toolbox').css({'display':'none'});})
 }
@@ -248,11 +275,20 @@ $('.deleteCol').on('click',function(){
 		saveDeleteState(toolboxColumn);
 });
 
+$('.addHeading').on('click',function(){
+	var h=prompt('Enter heading');
+	matrix[toolboxRow][toolboxColumn]['heading']=h;
+	showHeadingBox(toolboxRow,toolboxColumn,h);
+});
+
 function saveDeleteState(colNo){
 	$.ajax({url: "delCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
 
-$(document).on('click',function(e){
-	console.log('running');
-	e.preventDefault();
-})
+function showHeadingBox(r,c,heading){
+	$('#heading'+r+'x'+c).text(heading);
+	$('#heading'+r+'x'+c).css({'display':'inline-block'});
+	if(heading.length==0){
+		$('#heading'+r+'x'+c).css({'display':'none'});
+	}
+}
