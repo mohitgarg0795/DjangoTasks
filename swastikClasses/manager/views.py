@@ -10,7 +10,7 @@ import json
 		   	- fields -> colIdx - integer, colId - integer
 
 	data   	- stores data corresponding to a particular column 
-		   	- fields -> colId - integer, val - array 
+		   	- fields -> colId - integer, val - array, heading - array 
 
 	columns	- stores the highest colID number in the sheet
 		   	- fields -> highColId - integer
@@ -34,6 +34,10 @@ def openSheet(request):
 		
 		context = {}
 
+		for i in colIdx.find():
+			print i
+		for i in data.find():
+			print i
 		for i in data.find():
 			colId = i['colId']
 			col = colIdx.find({'colId': colId})[0]['colIdx']
@@ -68,15 +72,24 @@ def updateData(request):
 				})
 			#print i, request.GET.getlist(i)
 	else:
+		print request.META['QUERY_STRING']
+		for i in request.GET.iterlists():
+			print i
+		for i in request.GET.iterkeys():
+			print i, request.GET.getlist(i)
 		for i,j in request.GET.items():
 			if(i=='sheetName'):
 				continue
-			idx = int(i[6])
+			"""idx = int(i[6])
 			colId = colIdx.find({'colIdx': idx})[0]['colId']
 			data.update(
 					{'colId': colId},								# match condition to find the document to be updated
-					{ '$set': {'val': request.GET.getlist(i)}}		#updation to be performed
-				)
+					{ '$set': 
+						{'val': request.GET.getlist(i)},
+						{'heading': request.GET.getlist(i)}
+					}		#updation to be performed
+				)"""
+			print i, request.GET.getlist(i), j
 
 	return HttpResponse("success")
 
@@ -120,6 +133,11 @@ def addCol(request):
 		numOfRows = 1
 		columns.insert_one({'highColId': 0})		# if its a new sheet
 
+	print "MOHIT", columns.find()[0]['highColId'] 
+
+	for i in colIdx.find():
+		print i
+
 	highColId = columns.find()[0]['highColId']
 	colIdx.insert_one({
 			"colId": highColId,
@@ -127,7 +145,8 @@ def addCol(request):
 		})
 	data.insert_one({
 			"colId": highColId,
-			"val": ['' for i in range(0,numOfRows)]
+			"val": ['' for i in range(0,numOfRows)],
+			"heading": ['' for i in range(0,numOfRows)]
 		})
 
 	return HttpResponse("success")
