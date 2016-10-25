@@ -3,6 +3,19 @@ from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
 
+"""
+	DATABASE:
+
+	colidx 	- gives relation between colID and colINDEX
+		   	- fields -> colIdx - integer, colId - integer
+
+	data   	- stores data corresponding to a particular column 
+		   	- fields -> colId - integer, val - array 
+
+	columns	- stores the highest colID number in the sheet
+		   	- fields -> highColId - integer
+"""
+
 
 client = MongoClient()
 
@@ -59,12 +72,9 @@ def updateData(request):
 			if(i=='sheetName'):
 				continue
 			idx = int(i[6])
-			print('------------')
-			print(colIdx.find({'colIdx': idx}))
-			print('------------')
 			colId = colIdx.find({'colIdx': idx})[0]['colId']
 			data.update(
-					{'colId': colId},			# match condition to find the document to be updated
+					{'colId': colId},								# match condition to find the document to be updated
 					{ '$set': {'val': request.GET.getlist(i)}}		#updation to be performed
 				)
 
@@ -78,6 +88,7 @@ def addCol(request):
 	db = client[sheetName]
 	colIdx = db['colidx']
 	data = db['data']
+	columns = db['columns']
 	totalCol = colIdx.count()
 
 	#print newCol, totalCol
@@ -99,26 +110,45 @@ def addCol(request):
 				{'colIdx': i},
 				{'$inc': {'colIdx': 1}}
 			)
-
-	colIdx.insert_one({
-			"colId": totalCol,
-			"colIdx": newCol
-		})
 	
-	#print " "
-
 	#for i in colIdx.find():
 	#	print i
 	try:
 		numOfRows = len(data.find()[0]['val'])
+		columns.update({}, {'$inc': {'highColId': 1}})		# increase the colID for every column insertion
 	except: 
 		numOfRows = 1
+		columns.insert_one({'highColId': 0})		# if its a new sheet
+
+	highColId = columns.find()[0]['highColId']
+	colIdx.insert_one({
+			"colId": highColId,
+			"colIdx": newCol
+		})
 	data.insert_one({
-			"colId": totalCol,
+			"colId": highColId,
 			"val": ['' for i in range(0,numOfRows)]
 		})
 
-	for i in data.find():
-		print i
+	return HttpResponse("success")
+
+def deleteCol(request):
+	sheetName = request.GET['sheetName']
+	delCol  = request.GET['col']		# gives a unicode string
+	delCol = int(delCol)		# index of column to be deleted
+
+	db = client[sheetName]
+	colIdx = db['colidx']
+	data = db['data']
+	totalCol = colIdx.count()
+
+	delId = colIdx.find({'colIdx': delCol})[0]['colId']		# column id of the column to be deleted
+	colIdx.remove({'colIdx': delCol})		# removes all documents with coldIdx=delCol , although here it is always one document
+	data.remove({'colId': delId})			# removes the data document of the deleted column
+	for i in range(delCol+1,totalCol):		# update colIdx of all colIds with index = {col deleted	+ 1 , totalCol -1 i.e. highest index of col}
+		colIdx.update(
+				{'colIdx': i},
+				{'$inc': {'colIdx': -1}}
+			)
 
 	return HttpResponse("success")

@@ -251,6 +251,6 @@ $('.deleteCol').on('click',function(){
 		saveDeleteState(toolboxColumn);
 });
 
-function saveDeleteState(colNumber){
-	//$.ajax({});
+function saveDeleteState(colNo){
+	$.ajax({url: "delCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){console.log(data)}});
 }
