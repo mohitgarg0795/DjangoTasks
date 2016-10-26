@@ -165,21 +165,32 @@ function renderMatrix(){
 
 function saveSheet(){
 	var data=[];
-	var heading=[];
+	var heading=[]
 	for(var i=0;i<matrix[0].length;i++)
 	{
 		data.push([]);
-		heading.push([]);
+		heading.push([])
 	}
 	for(var i=0;i<matrix.length;i++)
 	{
 		for(var j=0;j<matrix[i].length;j++)
 		{
-			data[j].push(matrix[i][j].data);
-			heading[j].push(matrix[i][j].heading);
+			//var dict={'data':matrix[i][j]["data"]==undefined?"":matrix[i][j]["data"],'heading':matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]}
+			var x = matrix[i][j]["data"]==undefined?"":matrix[i][j]["data"]
+			var y = matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]
+			data[j].push(x);
+			heading[j].push(y);
 		}
 	}
-	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'heading':heading, 'sheetName': sheetName}});
+	console.log(data)
+	console.log(heading)
+	data=JSON.stringify(data);
+	//data=data.split('\\"').join("'");
+	heading=JSON.stringify(heading);
+	//heading=heading.split('\\"').join("'");
+	
+	//console.log(cell);
+	$.ajax({url: "updateData", type: 'GET', data: {'data': data, 'sheetName': sheetName, 'heading': heading}});
 }
 
 function openSheet(d){

@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
 
+
 """
 	DATABASE:
 
@@ -10,7 +11,7 @@ import json
 		   	- fields -> colIdx - integer, colId - integer
 
 	data   	- stores data corresponding to a particular column 
-		   	- fields -> colId - integer, val - array, heading - array 
+		   	- fields -> colId - integer, val - list of unicode, heading - list of unicode 
 
 	columns	- stores the highest colID number in the sheet
 		   	- fields -> highColId - integer
@@ -34,14 +35,12 @@ def openSheet(request):
 		
 		context = {}
 
-		for i in colIdx.find():
-			print i
-		for i in data.find():
-			print i
 		for i in data.find():
 			colId = i['colId']
-			col = colIdx.find({'colId': colId})[0]['colIdx']
-			context[col]=i['val']
+			idx = colIdx.find({'colId': colId})[0]['colIdx']
+			context[idx] = {}
+			context[idx]['data'] = i['val']
+			context[idx]['heading'] = i['heading']
 
 		return JsonResponse(context)
 
@@ -51,45 +50,20 @@ def updateData(request):
 	colIdx = db['colidx']
 	data = db['data']
 
-	#create new sheet
-	if sheetName not in client.database_names():
+	dataList = json.loads(request.GET['data'].encode('utf-8'))		# retrieve list from querydict 
+	headingList = json.loads(request.GET['heading'].encode('utf-8'))
 
-		"""
-			request.GET.item() gives the dictionary of items in the GET request
-			request.GET.getlist(i) gives the list of rows data sent as array in js
-			here i==sheet[colNum][] ==> i[6]=colNum
-		"""
-		for i,j in request.GET.items():
-			if(i=='sheetName'):
-				continue
-			colIdx.insert_one({
-					"colId": int(i[6]),
-					"colIdx": int(i[6])
-				})
-			data.insert_one({
-					"colId": int(i[6]),
-					"val": request.GET.getlist(i)	
-				})
-			#print i, request.GET.getlist(i)
-	else:
-		print request.META['QUERY_STRING']
-		for i in request.GET.iterlists():
-			print i
-		for i in request.GET.iterkeys():
-			print i, request.GET.getlist(i)
-		for i,j in request.GET.items():
-			if(i=='sheetName'):
-				continue
-			"""idx = int(i[6])
-			colId = colIdx.find({'colIdx': idx})[0]['colId']
-			data.update(
-					{'colId': colId},								# match condition to find the document to be updated
-					{ '$set': 
-						{'val': request.GET.getlist(i)},
-						{'heading': request.GET.getlist(i)}
-					}		#updation to be performed
-				)"""
-			print i, request.GET.getlist(i), j
+	for i in range(len(dataList)):				
+		colId = colIdx.find({'colIdx': i})[0]['colId']
+		data.update(
+			{'colId': colId},
+			{'$set': 
+				{
+					'val': dataList[colId],
+			 		'heading': headingList[colId]
+			 	}
+			}
+		)
 
 	return HttpResponse("success")
 
@@ -134,9 +108,6 @@ def addCol(request):
 		columns.insert_one({'highColId': 0})		# if its a new sheet
 
 	print "MOHIT", columns.find()[0]['highColId'] 
-
-	for i in colIdx.find():
-		print i
 
 	highColId = columns.find()[0]['highColId']
 	colIdx.insert_one({
