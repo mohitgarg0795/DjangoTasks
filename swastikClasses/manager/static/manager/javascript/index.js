@@ -175,8 +175,8 @@ function saveSheet(){
 	{
 		for(var j=0;j<matrix[i].length;j++)
 		{
-			data[j].push(matrix[i][j].data);
-			heading[j].push(matrix[i][j].heading);
+			data[j].push(matrix[i][j]["data"]);
+			heading[j].push(matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]);
 		}
 	}
 	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'heading':heading, 'sheetName': sheetName}});
