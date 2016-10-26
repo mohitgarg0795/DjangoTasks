@@ -179,7 +179,7 @@ function saveSheet(){
 			heading[j].push(matrix[i][j].heading);
 		}
 	}
-	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'heading':heading 'sheetName': sheetName}});
+	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data, 'heading':heading, 'sheetName': sheetName}});
 }
 
 function openSheet(d){
