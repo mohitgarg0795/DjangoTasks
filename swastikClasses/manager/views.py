@@ -47,7 +47,7 @@ def updateData(request):
 	colIdx = db['colidx']
 	data = db['data']
 	print('-------------------------')
-	print(request.GET)
+	print(request.GET['sheet'])
 	print('-------------------------')
 	#create new sheet
 	if sheetName not in client.database_names():
