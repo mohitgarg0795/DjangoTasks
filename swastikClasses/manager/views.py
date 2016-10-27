@@ -59,8 +59,8 @@ def updateData(request):
 			{'colId': colId},
 			{'$set': 
 				{
-					'val': dataList[colId],
-			 		'heading': headingList[colId]
+					'val': dataList[i],
+			 		'heading': headingList[i]
 			 	}
 			}
 		)

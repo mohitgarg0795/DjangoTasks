@@ -1,0 +1,28 @@
+
+.openedSheetContainer {
+	display: inline-block;
+	width:100%;
+	background:#E8E8E8;
+}
+
+.openedSheetTab{
+	float:left;
+	padding:10px;
+	margin:10px;
+	border-radius: 10px;
+	background:#FFFFFF;
+}
+
+.sheetClose {
+	margin-left:10px;
+	cursor:pointer;
+	transition:color 0.4s;
+}
+
+.sheetClose:hover {
+	color:#D82323;
+}
+
+.activeSheetTab {
+	background:#32C35B;
+}

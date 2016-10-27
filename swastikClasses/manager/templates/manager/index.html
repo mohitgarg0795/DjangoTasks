@@ -13,14 +13,10 @@
 <body>
 <center>	
   <div class='lockScreen'></div>
-  <div class='beginOptions'>
-    <div class='beginOptionsIntro'>What do you want to do?</div>
-    <div class='createNewSheet'>New Sheet</div>
-    <div class='openExistingSheet'>Open Sheet</div>
-  </div>
   <div class='existingSheetContainer'>
-    <div class='sheetPanel'>
-    </div>
+    <select class='existingSheetList'></select>  
+    <button class='openSheet btn btn-primary'>Open</button>
+    <button class='closeExistingSheetContainer btn btn-danger'>Close</button>
   </div>
   <div class='toolbox'>
     <div class="toolboxOptions fa fa-times deleteRow" title="delete row"></div>
@@ -30,6 +26,8 @@
   <div class='sheetContent'>
    	<div class='header'>
       <div class='menu'>
+        <div class='option createNewSheet fa fa-2x da-3x fa-plus' title='New Sheet'></div>
+        <div class='option openExistingSheet fa fa-2x fa-folder-open' title='Open Sheet'></div>
         <div class='option insertRowBefore fa fa-3x fa-angle-up' title='add row before'></div>
         <div class='option insertRowAfter fa fa-3x fa-angle-down' title='add row after'></div>
         <div class='option insertColBefore fa fa-3x fa-angle-left' title='add column to left'></div>
@@ -37,6 +35,7 @@
         <div class='save btn btn-warning' title='save'>Save</div>
       </div>
     </div>
+    <div class='openedSheetContainer'></div>
     <div class='mainContent'>
       <div class='sheetContainer'>
       </div>

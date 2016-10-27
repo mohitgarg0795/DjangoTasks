@@ -1,14 +1,10 @@
-var matrix=undefined;
+var dataMatrix={};
 var active=undefined;
-var sheetName=undefined;
+var activeSheetName=undefined;
+var existingSheets="";
 
 $(document).ready(function(){
-	var existingSheets="";
-	$.ajax({
-		url:'/openSheet',
-		data:{"queryType":"fetchNames"},
-		success:function(data){existingSheets=data.split('[').join('').split(']').join('').split('"').join('').split(' ').join('').split(',');existingSheets.sort();}
-	});
+	updateExistingSheetList();
 	$('.createNewSheet').on('click',function(){
 		var name=prompt('Enter sheet name');
 		if(name.length<=0){
@@ -21,105 +17,121 @@ $(document).ready(function(){
 		else{
 			sheetName=name;
 			matrix=undefined;
-			$('.beginOptions').hide();
-			$('.sheetContent').show();
 			document.title=sheetName;
+			addOpenedSheet(sheetName);
 		}
 	});
 	$('.openExistingSheet').on('click',function(){
-		$('.beginOptions').hide();
-		$('.sheet').remove();
+		$('.existingSheetListName').remove();
 		for(var i=0;i<existingSheets.length;i++)
 		{
-			var d=document.createElement('div');
+			var d=document.createElement('option');
 			$(d).text(existingSheets[i]);
-			$(d).addClass('sheet');
-			d.id=existingSheets[i];
-			$(d).on('click',function(){openSheet(this);$('.existingSheetContainer').hide();$('.sheetContent').show();});
-			$('.sheetPanel').append(d);
+			$(d).attr('value',existingSheets[i]);
+			$(d).addClass('existingSheetListName');
+			$('.existingSheetList').append(d);
 		}
 		$('.existingSheetContainer').show();
 	});
+	$('.closeExistingSheetContainer').on('click',function(){$('.existingSheetContainer').hide();});
+	$('.openSheet').on('click',function(){openSheet($('.existingSheetList')[0].value);$('.existingSheetContainer').hide();});
 	$('.insertRowBefore').on('click',function(){
-		if(matrix==undefined){
-			$('.lockScreen').show();
-			matrix=[[{'data':undefined,'heading':undefined}]];
-			renderMatrix();
-			saveInstantState(0);
-		}
-		else{
+			if(activeSheetName==undefined){
+				alert('Either start by creating a new sheet or open an existing sheet');
+				return;
+			}
+			if(dataMatrix[activeSheetName]==undefined){
+				$('.lockScreen').show();
+				dataMatrix[activeSheetName]=[[{'data':undefined,'heading':undefined}]];
+				renderMatrix();
+				saveInstantState(0);
+				return;
+			}
 			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
-			var cols=matrix[0].length;
+			var cols=dataMatrix[activeSheetName][0].length;
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
 			{
 				tempArray[0].push({'data':undefined,'heading':undefined});
 			}
-			matrix=matrix.slice(0,rowNumber).concat(tempArray,matrix.slice(rowNumber,matrix.length));
+			dataMatrix[activeSheetName]=dataMatrix[activeSheetName].slice(0,rowNumber).concat(tempArray,dataMatrix[activeSheetName].slice(rowNumber,dataMatrix[activeSheetName].length));
 			renderMatrix();
-		}
 	});
 	$('.insertRowAfter').on('click',function(){
-		if(matrix==undefined){
-			$('.lockScreen').show();
-			matrix=[[{'data':undefined,'heading':undefined}]];
-			renderMatrix();
-			saveInstantState(0);
-		}
-		else{
+			if(activeSheetName==undefined){
+				alert('Either start by creating a new sheet or open an existing sheet');
+				return;
+			}
+			if(dataMatrix[activeSheetName]==undefined){
+				$('.lockScreen').show();
+				dataMatrix[activeSheetName]=[[{'data':'','heading':''}]];
+				renderMatrix();
+				saveInstantState(0);
+				return;
+			}
 			var rowNumber=parseInt($('.active')[0].id.split('x')[0]);
-			var cols=matrix[0].length;
+			var cols=dataMatrix[activeSheetName][0].length;
 			var tempArray=[[]];
 			for(var i=0;i<cols;i++)
 			{
-				tempArray[0].push({'data':undefined,'heading':undefined});
+				tempArray[0].push({'data':'','heading':''});
 			}
-			matrix=matrix.slice(0,rowNumber+1).concat(tempArray,matrix.slice(rowNumber+1,matrix.length));
+			dataMatrix[activeSheetName]=dataMatrix[activeSheetName].slice(0,rowNumber+1).concat(tempArray,dataMatrix[activeSheetName].slice(rowNumber+1,dataMatrix[activeSheetName].length));
 			renderMatrix();
-		}
 	});
 	$('.insertColBefore').on('click',function(){
-		if(matrix==undefined){
-			$('.lockScreen').show();
-			matrix=[[{'data':undefined,'heading':undefined}]];
-			renderMatrix();
-			saveInstantState(0);
-		}
-		else{
+			if(activeSheetName==undefined){
+				alert('Either start by creating a new sheet or open an existing sheet');
+				return;
+			}
+			if(dataMatrix[activeSheetName]==undefined){
+				$('.lockScreen').show();
+				dataMatrix[activeSheetName]=[[{'data':'','heading':''}]];
+				renderMatrix();
+				saveInstantState(0);
+				return;
+			}
 			$('.lockScreen').show();
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
-			var rows=matrix.length;
+			var rows=dataMatrix[activeSheetName].length;
 			for(var i=0;i<rows;i++)
 			{
-				matrix[i]=matrix[i].slice(0,colNumber).concat([{'data':undefined,'heading':undefined}],matrix[i].slice(colNumber,matrix[i].length));
+				dataMatrix[activeSheetName][i]=dataMatrix[activeSheetName][i].slice(0,colNumber).concat([{'data':undefined,'heading':undefined}],dataMatrix[activeSheetName][i].slice(colNumber,dataMatrix[activeSheetName][i].length));
 			}
 			renderMatrix();
 			saveInstantState(colNumber);
-		}
 	});
 	$('.insertColAfter').on('click',function(){
-		if(matrix==undefined){
-			$('.lockScreen').show();
-			matrix=[[{'data':undefined,'heading':undefined}]];
-			renderMatrix();
-			saveInstantState(0);
-		}
-		else{
+			if(activeSheetName==undefined){
+				alert('Either start by creating a new sheet or open an existing sheet');
+				return;
+			}
+			if(dataMatrix[activeSheetName]==undefined){
+				$('.lockScreen').show();
+				dataMatrix[activeSheetName]=[[{'data':'','heading':''}]];
+				renderMatrix();
+				saveInstantState(0);
+				return;
+			}
 			$('.lockScreen').show();
 			var colNumber=parseInt($('.active')[0].id.split('x')[1]);
-			var rows=matrix.length;
+			var rows=dataMatrix[activeSheetName].length;
 			for(var i=0;i<rows;i++)
 			{
-				matrix[i]=matrix[i].slice(0,colNumber+1).concat([{'data':undefined,'heading':undefined}],matrix[i].slice(colNumber+1,matrix[i].length));
+				dataMatrix[activeSheetName][i]=dataMatrix[activeSheetName][i].slice(0,colNumber+1).concat([{'data':undefined,'heading':undefined}],dataMatrix[activeSheetName][i].slice(colNumber+1,dataMatrix[activeSheetName][i].length));
 			}
 			renderMatrix();
 			saveInstantState(colNumber+1);
-		}
 	});
 	$('.save').on('click',function(){saveSheet();});
 });
 
 function renderMatrix(){
+	var matrix=dataMatrix[activeSheetName];
+	if(matrix==undefined){
+		$('.row').remove();
+		return;
+	}
 	var rows=matrix.length;
 	var cols=matrix[0].length;
 	var activeId=undefined;
@@ -166,67 +178,60 @@ function renderMatrix(){
 function saveSheet(){
 	var data=[];
 	var heading=[]
-	for(var i=0;i<matrix[0].length;i++)
+	for(var i=0;i<dataMatrix[activeSheetName][0].length;i++)
 	{
 		data.push([]);
 		heading.push([])
 	}
-	for(var i=0;i<matrix.length;i++)
+	for(var i=0;i<dataMatrix[activeSheetName].length;i++)
 	{
-		for(var j=0;j<matrix[i].length;j++)
+		for(var j=0;j<dataMatrix[activeSheetName][i].length;j++)
 		{
-			//var dict={'data':matrix[i][j]["data"]==undefined?"":matrix[i][j]["data"],'heading':matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]}
-			var x = matrix[i][j]["data"]==undefined?"":matrix[i][j]["data"]
-			var y = matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]
+			var x = dataMatrix[activeSheetName][i][j]["data"]==undefined?"":dataMatrix[activeSheetName][i][j]["data"]
+			var y = dataMatrix[activeSheetName][i][j]["heading"]==undefined?"":dataMatrix[activeSheetName][i][j]["heading"]
 			data[j].push(x);
 			heading[j].push(y);
 		}
 	}
-	console.log(data)
-	console.log(heading)
 	data=JSON.stringify(data);
-	//data=data.split('\\"').join("'");
 	heading=JSON.stringify(heading);
-	//heading=heading.split('\\"').join("'");
-	
-	//console.log(cell);
-	$.ajax({url: "updateData", type: 'GET', data: {'data': data, 'sheetName': sheetName, 'heading': heading}});
+	$.ajax({url: "updateData", type: 'GET', data: {'data': data, 'sheetName': activeSheetName, 'heading': heading}});
 }
 
-function openSheet(d){
+function openSheet(sheetName){
 	$.ajax({
 		url:'openSheet',
 		type:'GET',
-		data:{'queryType':"openSheet",'sheetName':d.id},
+		data:{'queryType':"openSheet",'sheetName':sheetName},
 		success:function(data){
-			sheetName=d.id;
+			activeSheetName=sheetName;
 			var keys=Object.keys(data);
 			var nrows=data[keys[0]].data.length;
 			var ncols=keys.length;
-			matrix=[];
+			dataMatrix[activeSheetName]=[];
 			for(var i=0;i<nrows;i++)
 			{
-				matrix.push([]);
+				dataMatrix[activeSheetName].push([]);
 				for(var j=0;j<ncols;j++)
 				{
-					matrix[i].push({'data':undefined,'heading':undefined});
+					dataMatrix[activeSheetName][i].push({'data':undefined,'heading':undefined});
 				}
 			}
 			for(var i=0;i<keys.length;i++)
 			{
 				for(var j=0;j<data[keys[i]].data.length;j++)
 				{
-					matrix[j][keys[i]].data=data[keys[i]]['data'][j];
-					matrix[j][keys[i]].heading=data[keys[i]]['heading'][j];
+					dataMatrix[activeSheetName][j][keys[i]].data=data[keys[i]]['data'][j];
+					dataMatrix[activeSheetName][j][keys[i]].heading=data[keys[i]]['heading'][j];
 				}
 			}
-			renderMatrix();
+			addOpenedSheet(sheetName);
 		}
 	});
 }
 
 function saveInstantState(colNo){
-	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': sheetName, 'col': colNo}, success: function(data){$('.lockScreen').hide();}});
+	$.ajax({url: "addCol", type: 'GET', data: {'sheetName': activeSheetName, 'col': colNo}, success: function(data){$('.lockScreen').hide();}});
 }
 
 var toolboxRow="";
@@ -239,7 +244,6 @@ function showToolBox(e){
 	if(currentTarget.id.indexOf('data')>=0||currentTarget.id.indexOf('heading')>=0){
 		currentTarget=currentTarget.parentElement;
 	}
-	console.log(currentTarget);
 	toolboxRow=parseInt(currentTarget.id.split('x')[0]);
 	toolboxColumn=parseInt(currentTarget.id.split('x')[1]);
 	$('.toolbox').css({'display':'inline-block','left':x+'px','top':y+'px'});
@@ -248,7 +252,7 @@ function showToolBox(e){
 
 $('.deleteRow').on('mouseenter',function(){
 	$('.highlight').removeClass('highlight');
-	var numCols=matrix[0].length;
+	var numCols=dataMatrix[activeSheetName][0].length;
 	for(var i=0;i<numCols;i++)
 	{
 		$('#'+toolboxRow+'x'+i).addClass('highlight');
@@ -261,7 +265,7 @@ $('.deleteRow').on('mouseout',function(){
 
 $('.deleteCol').on('mouseenter',function(){
 	$('.highlight').removeClass('highlight');
-	var numRows=matrix.length;
+	var numRows=dataMatrix[activeSheetName].length;
 	for(var i=0;i<numRows;i++)
 	{
 		$('#'+i+'x'+toolboxColumn).addClass('highlight');
@@ -273,14 +277,14 @@ $('.deleteCol').on('mouseout',function(){
 });
 
 $('.deleteRow').on('click',function(){
-		matrix=matrix.slice(0,toolboxRow).concat(matrix.slice(toolboxRow+1,matrix.length));
+		dataMatrix[activeSheetName]=dataMatrix[activeSheetName].slice(0,toolboxRow).concat(dataMatrix[activeSheetName].slice(toolboxRow+1,dataMatrix[activeSheetName].length));
 		renderMatrix();
 });
 
 $('.deleteCol').on('click',function(){
-		for(var i=0;i<matrix.length;i++)
+		for(var i=0;i<dataMatrix[activeSheetName].length;i++)
 		{
-			matrix[i]=matrix[i].slice(0,toolboxColumn).concat(matrix[i].slice(toolboxColumn+1,matrix[i].length));
+			dataMatrix[activeSheetName][i]=dataMatrix[activeSheetName][i].slice(0,toolboxColumn).concat(dataMatrix[activeSheetName][i].slice(toolboxColumn+1,dataMatrix[activeSheetName][i].length));
 		}
 		renderMatrix();
 		saveDeleteState(toolboxColumn);
@@ -288,7 +292,7 @@ $('.deleteCol').on('click',function(){
 
 $('.addHeading').on('click',function(){
 	var h=prompt('Enter heading');
-	matrix[toolboxRow][toolboxColumn]['heading']=h;
+	dataMatrix[activeSheetName][toolboxRow][toolboxColumn]['heading']=h;
 	showHeadingBox(toolboxRow,toolboxColumn,h);
 });
 
@@ -303,3 +307,37 @@ function showHeadingBox(r,c,heading){
 		$('#heading'+r+'x'+c).css({'display':'none'});
 	}
 }
+
+function addOpenedSheet(sheetName){
+	var openedSheetTab=document.createElement('div');
+	var openedSheetName=document.createElement('span');
+	var sheetClose=document.createElement('span');
+	$(openedSheetTab).addClass('openedSheetTab');
+	$('.activeSheetTab').removeClass('activeSheetTab');
+	$(openedSheetTab).addClass('activeSheetTab');
+	$(openedSheetName).addClass('openedSheetName');
+	$(openedSheetName).text(sheetName);
+	$(sheetClose).addClass('sheetClose');
+	$(sheetClose).addClass('fa fa-times');
+	$(sheetClose).on('click',function(){var nextActive=$(this).parent().index()-1;if(nextActive<0){activeSheetName=undefined;;$(this).parent().remove();$('.row').remove();return;}$($(this).parent().parent().children()[nextActive]).click();$(this).parent().remove();})
+	$(openedSheetTab).append(openedSheetName);
+	$(openedSheetTab).append(sheetClose);
+	$('.openedSheetContainer').append(openedSheetTab);
+	activeSheetName=sheetName;
+	$(openedSheetTab).on('click',function(){
+		$('.activeSheetTab').removeClass('activeSheetTab');
+		$(this).addClass('activeSheetTab');
+		activeSheetName=$($(this).children()[0]).text();
+		renderMatrix();
+	});
+	renderMatrix();
+}
+
+function updateExistingSheetList(){
+	$.ajax({
+		url:'/openSheet',
+		data:{"queryType":"fetchNames"},
+		success:function(data){existingSheets=data.split('[').join('').split(']').join('').split('"').join('').split(' ').join('').split(',');existingSheets.sort();}
+	});
+}
+

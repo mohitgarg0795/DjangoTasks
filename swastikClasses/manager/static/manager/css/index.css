@@ -1,8 +1,7 @@
 
 @import url('tooltip.css');
-@import url('beginOptions.css');
 @import url('existingSheetContainer.css');
-@import url('sheetHeader.css');
+@import url('openedSheetContainer.css');
 @import url('sheetData.css');
 
 html,body {
@@ -22,5 +21,6 @@ html,body {
 	cursor:not-allowed;
 }
 
-
-
+.save {
+	margin-bottom:16px;
+}
