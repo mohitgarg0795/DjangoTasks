@@ -164,20 +164,22 @@ function renderMatrix(){
 }
 
 function saveSheet(){
-	var cell=[];
+	var data=[];
+	var heading=[];
 	for(var i=0;i<matrix[0].length;i++)
 	{
-		cell.push([]);
+		data.push([]);
+		heading.push([]);
 	}
 	for(var i=0;i<matrix.length;i++)
 	{
 		for(var j=0;j<matrix[i].length;j++)
 		{
-			var dict={'data':matrix[i][j]["data"],'heading':matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]}
-			cell[j].push(dict);
+			data[j].push(matrix[i][j]["data"]);
+			heading[j].push(matrix[i][j]["heading"]==undefined?"":matrix[i][j]["heading"]);
 		}
 	}
-	$.ajax({url: "updateData", type: 'GET', data: {'sheet': cell, 'sheetName': sheetName}});
+	$.ajax({url: "updateData", type: 'GET', data: {'sheet': data,'heading':heading,'sheetName': sheetName}});
 }
 
 function openSheet(d){
