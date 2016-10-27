@@ -49,41 +49,6 @@ def updateData(request):
 	db = client[sheetName]
 	colIdx = db['colidx']
 	data = db['data']
-<<<<<<< HEAD
-	print('-------------------------')
-	print(request.GET['sheet'])
-	print('-------------------------')
-	#create new sheet
-	if sheetName not in client.database_names():
-
-		"""
-			request.GET.item() gives the dictionary of items in the GET request
-			request.GET.getlist(i) gives the list of rows data sent as array in js
-			here i==sheet[colNum][] ==> i[6]=colNum
-		"""
-		for i,j in request.GET.items():
-			if(i=='sheetName'):
-				continue
-			colIdx.insert_one({
-					"colId": int(i[6]),
-					"colIdx": int(i[6])
-				})
-			data.insert_one({
-					"colId": int(i[6]),
-					"val": request.GET.getlist(i)	
-				})
-			#print i, request.GET.getlist(i)
-	else:
-		for i,j in request.GET.items():
-			if(i=='sheetName'):
-				continue
-			idx = int(i[6])
-			colId = colIdx.find({'colIdx': idx})[0]['colId']
-			data.update(
-					{'colId': colId},								# match condition to find the document to be updated
-					{ '$set': {'val': request.GET.getlist(i)}}		#updation to be performed
-				)
-=======
 
 	dataList = json.loads(request.GET['data'].encode('utf-8'))		# retrieve list from querydict 
 	headingList = json.loads(request.GET['heading'].encode('utf-8'))
@@ -99,7 +64,6 @@ def updateData(request):
 			 	}
 			}
 		)
->>>>>>> cefc6dd0bbdf79f52d45f757df055db515b4ad20
 
 	return HttpResponse("success")
 
