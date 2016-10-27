@@ -201,7 +201,7 @@ function openSheet(d){
 		success:function(data){
 			sheetName=d.id;
 			var keys=Object.keys(data);
-			var nrows=data[keys[0]].length;
+			var nrows=data[keys[0]].data.length;
 			var ncols=keys.length;
 			matrix=[];
 			for(var i=0;i<nrows;i++)
@@ -214,10 +214,10 @@ function openSheet(d){
 			}
 			for(var i=0;i<keys.length;i++)
 			{
-				for(var j=0;j<data[keys[i]].length;j++)
+				for(var j=0;j<data[keys[i]].data.length;j++)
 				{
-					matrix[j][keys[i]].data=data[keys[i]][j];
-					// wont work until backend modified matrix[j][keys[i]].heading=heading[keys[i]][j];
+					matrix[j][keys[i]].data=data[keys[i]]['data'][j];
+					matrix[j][keys[i]].heading=data[keys[i]]['heading'][j];
 				}
 			}
 			renderMatrix();
