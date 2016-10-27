@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
 
+
 """
 	DATABASE:
 
@@ -10,7 +11,7 @@ import json
 		   	- fields -> colIdx - integer, colId - integer
 
 	data   	- stores data corresponding to a particular column 
-		   	- fields -> colId - integer, val - array 
+		   	- fields -> colId - integer, val - list of unicode, heading - list of unicode 
 
 	columns	- stores the highest colID number in the sheet
 		   	- fields -> highColId - integer
@@ -36,8 +37,10 @@ def openSheet(request):
 
 		for i in data.find():
 			colId = i['colId']
-			col = colIdx.find({'colId': colId})[0]['colIdx']
-			context[col]=i['val']
+			idx = colIdx.find({'colId': colId})[0]['colIdx']
+			context[idx] = {}
+			context[idx]['data'] = i['val']
+			context[idx]['heading'] = i['heading']
 
 		return JsonResponse(context)
 
@@ -46,6 +49,7 @@ def updateData(request):
 	db = client[sheetName]
 	colIdx = db['colidx']
 	data = db['data']
+<<<<<<< HEAD
 	print('-------------------------')
 	print(request.GET['sheet'])
 	print('-------------------------')
@@ -79,6 +83,23 @@ def updateData(request):
 					{'colId': colId},								# match condition to find the document to be updated
 					{ '$set': {'val': request.GET.getlist(i)}}		#updation to be performed
 				)
+=======
+
+	dataList = json.loads(request.GET['data'].encode('utf-8'))		# retrieve list from querydict 
+	headingList = json.loads(request.GET['heading'].encode('utf-8'))
+
+	for i in range(len(dataList)):				
+		colId = colIdx.find({'colIdx': i})[0]['colId']
+		data.update(
+			{'colId': colId},
+			{'$set': 
+				{
+					'val': dataList[colId],
+			 		'heading': headingList[colId]
+			 	}
+			}
+		)
+>>>>>>> cefc6dd0bbdf79f52d45f757df055db515b4ad20
 
 	return HttpResponse("success")
 
@@ -122,6 +143,8 @@ def addCol(request):
 		numOfRows = 1
 		columns.insert_one({'highColId': 0})		# if its a new sheet
 
+	print "MOHIT", columns.find()[0]['highColId'] 
+
 	highColId = columns.find()[0]['highColId']
 	colIdx.insert_one({
 			"colId": highColId,
@@ -129,7 +152,8 @@ def addCol(request):
 		})
 	data.insert_one({
 			"colId": highColId,
-			"val": ['' for i in range(0,numOfRows)]
+			"val": ['' for i in range(0,numOfRows)],
+			"heading": ['' for i in range(0,numOfRows)]
 		})
 
 	return HttpResponse("success")
