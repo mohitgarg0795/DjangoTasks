@@ -53,7 +53,7 @@ def openFile(request):
 
 	keys = headings.find()[0]['headings']
 	context = {}
-
+	context['headings'] = keys
 	for i in data.find():
 		id = str(i['_id'])
 		context[id] = {}
@@ -64,3 +64,32 @@ def openFile(request):
 			}
 
 	return JsonResponse(context)
+
+def colSwap(request):
+	h1 = request.GET['heading1']
+	h2 = request.GET['heading2']
+	sheetName = request.GET['fileName']
+
+	db = client[sheetName]
+	headings = db['headings']
+
+	keys = headings.find()[0]['headings']
+	id = headings.find()[0]['_id']
+	count = 0
+	
+	for i in range(len(keys)):
+		if keys[i] == h1:
+			keys[i] = h2
+			count = count+1
+		if keys[i] == h2:
+			keys[i] = h1
+			count = count+1
+		if count == 2:
+			break
+
+	headings.update(
+			{'_id': id},
+			{'$set': {'headings': keys}}
+		)
+
+	return HttpResponse("success")

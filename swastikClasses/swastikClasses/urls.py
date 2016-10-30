@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^file/importFile$', fviews.importFile),
     url(r'^file/existingFileNames$', fviews.existingFileNames),
     url(r'^file/openFile$', fviews.openFile),
+    url(r'^file/colSwap$', fviews.colSwap),
 ]
