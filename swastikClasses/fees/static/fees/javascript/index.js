@@ -8,7 +8,7 @@ $(document).ready(function(){
 function importFile(matrix,fileName){
 	matrix=JSON.stringify(matrix);
 	$.ajax({
-		url:'',
+		url:'file/importFile',
 		type:'GET',
 		data:{'fileName':fileName,'content':matrix},
 		success:function(data){console.log(data);}
