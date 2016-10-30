@@ -81,7 +81,8 @@ def colSwap(request):
 		if keys[i] == h1:
 			keys[i] = h2
 			count = count+1
-		if keys[i] == h2:
+		else:
+			if keys[i] == h2:
 			keys[i] = h1
 			count = count+1
 		if count == 2:
