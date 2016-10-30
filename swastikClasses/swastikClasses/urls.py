@@ -32,4 +32,6 @@ urlpatterns = [
     url(r'^addCol$', mviews.addCol),
     url(r'^delCol$', mviews.deleteCol),
     url(r'^file/importFile$', fviews.importFile),
+    url(r'^file/existingFileNames$', fviews.existingFileNames),
+    url(r'^file/openFile$', fviews.openFile),
 ]
