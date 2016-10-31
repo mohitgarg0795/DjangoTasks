@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
@@ -13,14 +14,15 @@ def checkEmpty(x):
 		return False
 	return True
 
+@csrf_exempt
 def importFile(request):
-	content = json.loads(request.GET['content'])
-	
+	content = json.loads(request.POST['content'])
+
 	keys = content[0]
 	numOfCol = len(content[0])
 	numOfRow = len(content)
 	
-	sheetName = request.GET['fileName']
+	sheetName = request.POST['fileName']
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
@@ -37,7 +39,6 @@ def importFile(request):
 						'val': content[row][col],
 						'Lstatus': checkEmpty(content[row][col]) 
 					}
-		print context
 		data.insert_one(context)
 
 	return HttpResponse("success")
@@ -50,10 +51,10 @@ def openFile(request):
 	db = client[sheetName] 
 	headings = db['headings']
 	data = db['data']
-
 	keys = headings.find()[0]['headings']
 	context = {}
 	context['headings'] = keys
+
 	for i in data.find():
 		id = str(i['_id'])
 		context[id] = {}
@@ -83,8 +84,8 @@ def colSwap(request):
 			count = count+1
 		else:
 			if keys[i] == h2:
-			keys[i] = h1
-			count = count+1
+				keys[i] = h1
+				count = count+1
 		if count == 2:
 			break
 
@@ -94,3 +95,25 @@ def colSwap(request):
 		)
 
 	return HttpResponse("success")
+
+def addNewEntry(request):
+	sheetName = request.GET['fileName']
+	db = client[sheetName]
+	headings = db['headings']
+	data = db['data']
+
+	keys = headings.find()[0]['headings']
+
+	context = {}
+	for key in keys:
+		context[key] = {
+						'time': '',
+						'oldVal': [],
+						'val': '',
+						'Lstatus': False
+					}
+
+	id = data.insert_one(context).inserted_id
+
+	return HttpResponse(str(id))
+

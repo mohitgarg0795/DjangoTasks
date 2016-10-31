@@ -13,11 +13,18 @@
 <body>
 	<div class='header'>
 		<div class='option fa fa-2x fa-upload importFile' title='import csv'></div>
-		<div class='option fa fa-2x fa-download downloadFile' title='save as csv'></div>
+		<div class='option fa fa-2x fa-download downloadFile sheetRequired' title='save as csv'></div>
 		<div class='option fa fa-2x fa-folder openFile' title='open existing file'></div>
 		<input type='file' class='hiddenInput'></input>
+		<div class='option fa fa-2x fa-exchange swapColumns sheetRequired' title='swap columns'></div>
+		<div class='option fa fa-2x fa-plus addEntry sheetRequired' title='add entry'></div>
 	</div>
 	<div class='sheetSwitchWindow'></div>
+	<div class='existingFileContainer'>
+		<select class='openSheet'></select>
+		<div class='btn btn-primary confirmOpenSheet'>Open</div>
+		<div class='btn btn-danger cancelOpenSheet'>Cancel</div>
+	</div>
 	<center>
 	<div class='outerContentContainer'>
 		<div class='mainContent'>
