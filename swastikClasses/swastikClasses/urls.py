@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 import tracker.views as tviews
+import sheets.views as sviews
 import manager.views as mviews
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
 	url(r'^update$', tviews.update),
     url(r'^fetch$', tviews.fetch),
 	url(r'^$', tviews.index),
+    url(r'^sheets$',sviews.index),
     url(r'^manager$', mviews.index),
     url(r'^updateData$', mviews.updateData),
     url(r'^openSheet$', mviews.openSheet),
