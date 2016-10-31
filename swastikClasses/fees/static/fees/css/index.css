@@ -1,6 +1,7 @@
 
 @import url('./header.css');
 @import url('./sheetSwitchWindow.css');
+@import url('./mainContent.css');
 
 html,body {
   width:100%;

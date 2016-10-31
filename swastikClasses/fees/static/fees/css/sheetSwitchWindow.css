@@ -10,8 +10,10 @@
 	margin-left:10px;
 	margin-top:5px;
 	height:30px;
-	background:red;
+	background:#FFFFFF;
+	box-shadow: 0.5px 0.5px 2px 1px #A1A1A1;
 	padding-right:10px;
+	font-family: Patua One;
 	border-top-right-radius: 10px;
 	border-bottom-right-radius: 10px;
 }
@@ -19,4 +21,17 @@
 .sheetTabName,.sheetTabClose {
 	margin-top:6px;
 	margin-left:10px;
+}
+
+.sheetTabClose {
+	cursor:pointer;
+	transition: transform 0.5s;
+}
+
+.sheetTabClose:hover {
+	transform:rotateZ(180deg);
+}
+
+.activeSheetTab {
+	background: #75E39C;
 }

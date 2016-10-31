@@ -1,4 +1,7 @@
 
+var dataMatrix={temp:[{'First Name':'Jasmeet'},{'Middle Name':'Singh'},{'Last Name':'Saini'}]};
+var currentActiveSheet=undefined;
+
 $(document).ready(function(){
 	$('.importFile').on('click',function(){
 		$('.hiddenInput').click();
@@ -11,8 +14,37 @@ function importFile(matrix,fileName){
 		url:'',
 		type:'GET',
 		data:{'fileName':fileName,'content':matrix},
-		success:function(data){console.log(data);}
+		success:function(data){
+			console.log(data);
+			updateDataMatrix(fileName); // to reflect changes in database into the dataMatrix
+			addSheetTab(fileName); // to add a sheet Tab in the sheetTabWindow
+			render(fileName); // to render dataMatrix to screen
+		}
 	})
+}
+
+function updateDataMatrix(fileName){
+	//$.ajax({}); update the dataMatrix to store the file data
+}
+
+function addSheetTab(fileName){
+	var sheetTab=document.createElement('div');
+	var sheetTabName=document.createElement('span');
+	var sheetTabClose=document.createElement('span');
+	$(sheetTab).addClass('sheetTab');
+	$(sheetTabName).addClass('sheetTabName');
+	$(sheetTabClose).addClass('sheetTabClose fa fa-times');
+	$(sheetTab).append(sheetTabName);
+	$(sheetTab).append(sheetTabClose);
+	$(sheetTabName).text(fileName);
+	$('.activeSheetTab').removeClass('activeSheetTab');
+	$(sheetTab).addClass('activeSheetTab');
+	currentActiveSheet=fileName;
+	$('.sheetSwitchWindow').append(sheetTab);
+}
+
+function render(fileName){
+	
 }
 
 $('.hiddenInput').on('change',function(e) {
