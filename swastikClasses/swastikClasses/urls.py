@@ -31,7 +31,8 @@ urlpatterns = [
     url(r'^openSheet$', mviews.openSheet),
     url(r'^addCol$', mviews.addCol),
     url(r'^delCol$', mviews.deleteCol),
-    url(r'^file/importFile$', fviews.importFile),
-    url(r'^file/existingFileNames$', fviews.existingFileNames),
-    url(r'^file/openFile$', fviews.openFile),
+    url(r'^fees/importFile$', fviews.importFile),
+    url(r'^fees/existingFileNames$', fviews.existingFileNames),
+    url(r'^fees/openFile$', fviews.openFile),
+    url(r'^fees/colSwap$', fviews.colSwap),
 ]

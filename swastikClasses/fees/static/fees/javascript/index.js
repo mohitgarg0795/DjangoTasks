@@ -35,7 +35,7 @@ $(document).ready(function(){
 function importFile(matrix,fileName){
 	matrix=JSON.stringify(matrix);
 	$.ajax({
-		url:'file/importFile',
+		url:'fees/importFile',
 		type:'POST',
 		data:{'fileName':fileName,'content':matrix},
 		success:function(data){
@@ -49,7 +49,7 @@ function importFile(matrix,fileName){
 
 function fetchExistingFileNames(){
 	$.ajax({
-		url:'file/existingFileNames',
+		url:'fees/existingFileNames',
 		type:'GET',
 		success:function(data){
 			data=JSON.parse(data);
@@ -68,7 +68,7 @@ function fetchExistingFileNames(){
 
 function updateDataMatrix(fileName){
 	$.ajax({
-		url:'/file/openFile',
+		url:'/fees/openFile',
 		type:'GET',
 		data:{'fileName':fileName},
 		success:function(data){
@@ -164,8 +164,6 @@ function render(fileName){
 function swapColumns(){
 	swapCol1=undefined;
 	swapCol2=undefined;
-	console.log(swapCol1);
-	console.log(swapCol2);
 	if(currentActiveSheet==undefined){return;}
 	swapState=true;
 	$('.swapColumns').css({'color':'#69EC97'});
@@ -197,9 +195,9 @@ $(document).on('mousedown',function(e){
 
 function swap(swapCol1,swapCol2){	
 	$.ajax({
-		url:'',
+		url:'fees/colSwap',
 		type:'GET',
-		data:{'heading1':swapCol1,'heading2':swapCol2},
+		data:{'heading1':swapCol1,'heading2':swapCol2,'fileName':currentActiveSheet},
 		success:function(data){
 			console.log(data);
 			$('.activeCol').removeClass('activeCol');
