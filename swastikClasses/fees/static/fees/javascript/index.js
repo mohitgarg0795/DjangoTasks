@@ -1,6 +1,7 @@
 
 var dataMatrix={temp:[{'First Name':'Jasmeet'},{'Middle Name':'Singh'},{'Last Name':'Saini'}]};
 var currentActiveSheet=undefined;
+var existingfiles=undefined;
 
 $(document).ready(function(){
 	$('.importFile').on('click',function(){
@@ -21,6 +22,10 @@ function importFile(matrix,fileName){
 			render(fileName); // to render dataMatrix to screen
 		}
 	})
+}
+
+function fetchExistingFileNames(){
+	//$.ajax()
 }
 
 function updateDataMatrix(fileName){
