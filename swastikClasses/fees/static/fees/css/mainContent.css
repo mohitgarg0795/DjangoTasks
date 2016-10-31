@@ -5,7 +5,8 @@
 	background:#FFFFFF;
 	box-shadow: 0px 0px 2px 2px #D1D1D1;
 	font-size:20px;
-	margin-top:14%;
+	margin-top:90%;
+	margin-left:300%;
 	border-top-left-radius:10px;
 	border-bottom-right-radius:10px; 
 	border-top-right-radius:40px;
@@ -22,6 +23,7 @@
 .mainContent {
 	white-space: nowrap;
 	padding:10px;
+	float:left;
 }
 
 .row {
@@ -30,9 +32,13 @@
 
 .col {
 	display: inline-block;
-	margin-left:-4.5px;
 	width:100px;
 	height:100%;
 	border:1px solid #8C8C8C;
 	white-space: nowrap;
+}
+
+.activeCol {
+	border-left:2px solid #66FFFD;
+	border-right:2px solid #66FFFD;
 }

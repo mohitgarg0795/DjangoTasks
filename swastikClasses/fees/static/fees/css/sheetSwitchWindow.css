@@ -16,6 +16,7 @@
 	font-family: Patua One;
 	border-top-right-radius: 10px;
 	border-bottom-right-radius: 10px;
+	cursor: pointer;
 }
 
 .sheetTabName,.sheetTabClose {
@@ -24,7 +25,6 @@
 }
 
 .sheetTabClose {
-	cursor:pointer;
 	transition: transform 0.5s;
 }
 

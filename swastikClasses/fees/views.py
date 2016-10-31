@@ -52,10 +52,10 @@ def openFile(request):
 	db = client[sheetName] 
 	headings = db['headings']
 	data = db['data']
-
 	keys = headings.find()[0]['headings']
 	context = {}
-
+	context['headings'] = keys
+	
 	for i in data.find():
 		id = str(i['_id'])
 		context[id] = {}
