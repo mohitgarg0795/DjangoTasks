@@ -26,6 +26,15 @@ function importFile(matrix,fileName){
 
 function fetchExistingFileNames(){
 	//$.ajax()
+	console.log("mohit");
+	$.ajax({
+		url:'file/openFile',
+		type:'GET',
+		data:{'fileName':'mohit'},
+		success:function(data){
+			console.log(data);
+		}
+	})	
 }
 
 function updateDataMatrix(fileName){
@@ -95,3 +104,6 @@ $('.hiddenInput').on('change',function(e) {
 	   reader.readAsText(file)
 });
 
+$('.openFile').on('click',function(){
+	fetchExistingFileNames();
+})

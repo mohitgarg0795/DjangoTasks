@@ -42,19 +42,25 @@ def importFile(request):
 
 	return HttpResponse("success")
 
+def existingFileNames(request):
+	return HttpResponse(json.dumps(client.database_names()))
+
 def openFile(request):
-	if request.GET['queryType'] == 'fetchNames':
-		return HttpResponse(json.dumps(client.database_names()))
+	sheetName = request.GET['fileName']
+	db = client[sheetName] 
+	headings = db['headings']
+	data = db['data']
 
-	if request.GET['queryType'] == 'openFile':
-		sheetName = request.GET['fileName']
-		db = client[sheetName] 
-		headings = db['headings']
-		data = db['data']
+	keys = headings.find()[0]['headings']
+	context = {}
 
-		keys = headings.find()[0]['headings']
+	for i in data.find():
+		id = str(i['_id'])
+		context[id] = {}
+		for key in keys:
+			context[id][key] = {
+				'val': i[key]['val'],
+				'status': i[key]['Lstatus']
+			}
 
-		context = {}
-
-		return HttpResponse("success")
-
+	return JsonResponse(context)
