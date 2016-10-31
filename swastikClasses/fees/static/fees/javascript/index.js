@@ -1,19 +1,32 @@
 
-var dataMatrix={temp:[{'First Name':'Jasmeet'},{'Middle Name':'Singh'},{'Last Name':'Saini'}]};
+var dataMatrix={};
 var currentActiveSheet=undefined;
 var existingfiles=undefined;
 
 $(document).ready(function(){
 	$('.importFile').on('click',function(){
 		$('.hiddenInput').click();
-	})
+	});
+	$('.openFile').on('click',function(){
+		fetchExistingFileNames();
+	});
+	$('.confirmOpenSheet').on('click',function(){
+		var file=$('.openSheet').val();
+		updateDataMatrix(file);
+		addSheetTab(file);
+		render(file);
+		$('.existingFileContainer').hide();
+	});
+	$('.cancelOpenSheet').on('click',function(){
+		$('.existingFileContainer').hide();
+	});
 });
 
 function importFile(matrix,fileName){
 	matrix=JSON.stringify(matrix);
 	$.ajax({
 		url:'file/importFile',
-		type:'GET',
+		type:'POST',
 		data:{'fileName':fileName,'content':matrix},
 		success:function(data){
 			console.log(data);
@@ -25,23 +38,37 @@ function importFile(matrix,fileName){
 }
 
 function fetchExistingFileNames(){
-	//$.ajax()
-	console.log("mohit");
 	$.ajax({
-		url:'file/openFile',
+		url:'file/existingFileNames',
 		type:'GET',
-		data:{'fileName':'mohit'},
 		success:function(data){
-			console.log(data);
+			data=JSON.parse(data);
+			$('.openSheet').children().remove();
+			for(var i=0;i<data.length;i++)
+			{
+				var option=document.createElement('option');
+				$(option).attr('val',data[i]);
+				$(option).text(data[i]);
+				$('.openSheet').append(option);
+			}
+			$('.existingFileContainer').show();
 		}
-	})	
+	});	
 }
 
 function updateDataMatrix(fileName){
-	//$.ajax({}); update the dataMatrix to store the file data
+	$.ajax({
+		url:'/file/openFile',
+		type:'GET',
+		data:{'fileName':fileName},
+		success:function(data){
+			dataMatrix[fileName]=data;
+		}
+	});
 }
 
 function addSheetTab(fileName){
+	$('.empty').hide();
 	var sheetTab=document.createElement('div');
 	var sheetTabName=document.createElement('span');
 	var sheetTabClose=document.createElement('span');
@@ -58,7 +85,24 @@ function addSheetTab(fileName){
 }
 
 function render(fileName){
-	
+	var renderReady=false;
+	setTimeout(function(){
+	if(dataMatrix[fileName]!=undefined){renderReady=true;}
+	if(renderReady){
+		var data=dataMatrix[fileName];
+		var rowKeys=Object.keys(data);
+		var numRows=rowKeys.length;
+		var headings=Object.keys(data[rowKeys[0]]);
+		for(var i=0;i<numRows;i++)
+		{
+			console.log(data[rowKeys[i]]);
+			for(var j=0;j<headings.length;j++)
+			{
+				//console.log(data[rowKeys[i]][headings[j]]);
+			}
+		}
+	}
+	},100);
 }
 
 $('.hiddenInput').on('change',function(e) {
@@ -103,7 +147,3 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
-
-$('.openFile').on('click',function(){
-	fetchExistingFileNames();
-})

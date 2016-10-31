@@ -10,3 +10,19 @@ html,body {
   background:#F6F6F6;
 }
 
+.existingFileContainer {
+	position:absolute;
+	display:none;
+	top:32%;
+	left:39%;
+	border-radius: 4px;
+	width:380px;
+	height:60px;
+	background: #C4C4C4;
+	border:1px solid #747474;
+}
+
+.openSheet {
+	margin-top:20px;
+	margin-left:20px;
+}

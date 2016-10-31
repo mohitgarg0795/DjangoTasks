@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
@@ -13,14 +14,15 @@ def checkEmpty(x):
 		return False
 	return True
 
+@csrf_exempt
 def importFile(request):
-	content = json.loads(request.GET['content'])
-	
+	content = json.loads(request.POST['content'])
+
 	keys = content[0]
 	numOfCol = len(content[0])
 	numOfRow = len(content)
 	
-	sheetName = request.GET['fileName']
+	sheetName = request.POST['fileName']
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
