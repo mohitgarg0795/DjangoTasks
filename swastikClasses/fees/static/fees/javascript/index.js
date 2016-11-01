@@ -333,4 +333,4 @@ setInterval(function(){
 	}else{
 		console.log('not rendering');
 	}
-},4000);
+},1000);
