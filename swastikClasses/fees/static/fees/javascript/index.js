@@ -33,6 +33,9 @@ $(document).ready(function(){
 	$('.addEntry').on('click',function(){
 		addEntry();
 	});
+	$('.formClose').on('click',function(){
+		$('.entryForm').hide();
+	});
 });
 
 function importFile(matrix,fileName){
@@ -42,7 +45,6 @@ function importFile(matrix,fileName){
 		type:'POST',
 		data:{'fileName':fileName,'content':matrix},
 		success:function(data){
-			console.log(data);
 			updateDataMatrix(fileName); // to reflect changes in database into the dataMatrix
 			addSheetTab(fileName); // to add a sheet Tab in the sheetTabWindow
 			render(fileName); // to render dataMatrix to screen
@@ -151,8 +153,11 @@ function render(fileName){
 						var col=document.createElement('div');
 						var val=headings[j];
 						if(i!=-1){val=data[rowKeys[i]][headings[j]].val}
+						if(i!=-1){if(data[rowKeys[i]][headings[j]].status){$(col).addClass('locked');}else{$(col).addClass('unlocked');}}
 						$(col).text(val);
-						$(col).addClass('col row'+k+' col'+j);
+						$(col).addClass('col row'+k+' col'+j+' '+rowKeys[i]+'x'+headings[j]);
+						$(col).attr('objId',rowKeys[i]);
+						$(col).attr('heading',headings[j]);
 						col.id=k+'x'+j;
 						$(row).append(col);
 					}
@@ -202,7 +207,6 @@ function swap(swapCol1,swapCol2){
 		type:'GET',
 		data:{'heading1':swapCol1,'heading2':swapCol2,'fileName':currentActiveSheet},
 		success:function(data){
-			console.log(data);
 			$('.activeCol').removeClass('activeCol');
 			$('.swapColumns').css({'color':'#FFFFFF'});
 		}
@@ -214,8 +218,47 @@ function addEntry(){
 		url:'fees/addNewEntry',
 		type:'GET',
 		data:{'fileName':currentActiveSheet},
-		success:function(data){console.log(data);}
+		success:function(data){console.log(data);renderForm(data);}
 	});
+}
+
+function renderForm(objId){
+	var headings=dataMatrix[currentActiveSheet].headings;
+	$('.formRow').remove();	
+	for(var i=0;i<headings.length;i++)
+	{
+		var formRow=document.createElement('div');
+		var formLabel=document.createElement('div');
+		var formInput=document.createElement('textarea');
+		$(formRow).addClass('formRow');
+		$(formLabel).addClass('formLabel');
+		$(formInput).addClass('formInput');
+		$(formLabel).text(headings[i]);
+		$(formRow).append(formLabel);
+		$(formRow).append(formInput);
+		$(formInput)[0].id=objId+'x'+headings[i];
+		$(formInput).on('click',function(){
+			alert('hey');
+			console.log($('.'+this.id).attr('beginTime'));
+			if($('.'+this.id).attr('beginTime')==undefined){
+				var date=new Date();
+				var d=date.getDate()+'d'+date.getMonth()+'m'+date.getFullYear()+'y'+date.getHours()+'h'+date.getMinutes();
+				$('.'+this.id).attr('beginTime',d);	
+			}
+		});
+		$(formInput).on('keydown',function(){
+			var heading=this.id.split('x')[1];
+			dataMatrix[currentActiveSheet][objId][heading].val=this.value;
+			$('.'+this.id).css({'background':'#DEDEDE'})
+		});
+		$(formInput).on('keyup',function(){
+			var heading=this.id.split('x')[1];
+			dataMatrix[currentActiveSheet][objId][heading].val=this.value;
+			$('.'+this.id).css({'background':'#DEDEDE'})
+		});
+		$('.entryFormContainer').append(formRow);
+	}
+	$('.entryForm').show();
 }
 
 $('.hiddenInput').on('change',function(e) {
@@ -264,9 +307,30 @@ $('.hiddenInput').on('change',function(e) {
 setInterval(function(){
 	if(currentActiveSheet!=undefined){
 		console.log('rendering');
-		updateDataMatrix(currentActiveSheet);
-		render(currentActiveSheet);
+		var elements=$('.unlocked');
+		var data={};
+		for(var i=0;i<elements.length;i++)
+		{
+			var objId=$(elements[i]).attr('objId');
+			var heading=$(elements[i]).attr('heading');
+			if(data[objId]==undefined){data[objId]={};}
+			if(data[objId][heading]==undefined){data[objId][heading]={}}
+			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
+			data[objId][heading].time=$(elements[i]).attr('beginTime');
+		}
+		$.ajax({
+			url:'',
+			method:'POST',
+			data:{'data':data},
+			success:function(){
+				console.log('save completed');
+				// render
+				updateDataMatrix(currentActiveSheet);
+				render(currentActiveSheet);
+			}	
+
+		})
 	}else{
 		console.log('not rendering');
 	}
-},1000);
+},4000);

@@ -2,6 +2,7 @@
 @import url('./header.css');
 @import url('./sheetSwitchWindow.css');
 @import url('./mainContent.css');
+@import url('./entryForm.css');
 
 html,body {
   width:100%;
