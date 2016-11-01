@@ -211,7 +211,7 @@ function swap(swapCol1,swapCol2){
 
 function addEntry(){
 	$.ajax({
-		url:'fees/addEntry',
+		url:'fees/addNewEntry',
 		type:'GET',
 		data:{'fileName':currentActiveSheet},
 		success:function(data){console.log(data);}

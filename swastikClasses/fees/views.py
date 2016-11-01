@@ -39,7 +39,6 @@ def importFile(request):
 						'val': content[row][col],
 						'Lstatus': checkEmpty(content[row][col]) 
 					}
-		print context
 		data.insert_one(context)
 
 	return HttpResponse("success")
@@ -55,7 +54,7 @@ def openFile(request):
 	keys = headings.find()[0]['headings']
 	context = {}
 	context['headings'] = keys
-	
+
 	for i in data.find():
 		id = str(i['_id'])
 		context[id] = {}
@@ -96,3 +95,25 @@ def colSwap(request):
 		)
 
 	return HttpResponse("success")
+
+def addNewEntry(request):
+	sheetName = request.GET['fileName']
+	db = client[sheetName]
+	headings = db['headings']
+	data = db['data']
+
+	keys = headings.find()[0]['headings']
+
+	context = {}
+	for key in keys:
+		context[key] = {
+						'time': '',
+						'oldVal': [],
+						'val': '',
+						'Lstatus': False
+					}
+
+	id = data.insert_one(context).inserted_id
+
+	return HttpResponse(str(id))
+

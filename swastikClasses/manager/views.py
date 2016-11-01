@@ -107,8 +107,6 @@ def addCol(request):
 		numOfRows = 1
 		columns.insert_one({'highColId': 0})		# if its a new sheet
 
-	print "MOHIT", columns.find()[0]['highColId'] 
-
 	highColId = columns.find()[0]['highColId']
 	colIdx.insert_one({
 			"colId": highColId,

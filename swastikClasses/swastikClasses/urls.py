@@ -34,5 +34,6 @@ urlpatterns = [
     url(r'^fees/importFile$', fviews.importFile),
     url(r'^fees/existingFileNames$', fviews.existingFileNames),
     url(r'^fees/openFile$', fviews.openFile),
-    url(r'^fees/colSwap$', fviews.colSwap)
+    url(r'^fees/colSwap$', fviews.colSwap),
+    url(r'^fees/addNewEntry$', fviews.addNewEntry),
 ]
