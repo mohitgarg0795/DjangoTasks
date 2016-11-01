@@ -324,7 +324,7 @@ $('.hiddenInput').on('change',function(e) {
 	   	 				open=!open;
 	   	 			}
 	   	 			else
-	   	 			if(result[i][j]==','&&!open&&content.length>0)
+	   	 			if(result[i][j]==','&&!open)
 	   	 			{
 	   	 		
 	   	 				matrix[i].push(content);
@@ -336,12 +336,10 @@ $('.hiddenInput').on('change',function(e) {
 	   	 			}
 
 	   	 		}
-	   	 		if(content.length>0)
-	   	 		{
-	   	 			matrix[i].push(content);
-	   	 			content='';
-	   	 		}
+	   	 		matrix[i].push(content);
+	   	 		content='';
 	   	 	}
+	   	 	console.log(matrix);
 	   	 	importFile(matrix,fileName);        
 	   	}
 	   reader.readAsText(file)
