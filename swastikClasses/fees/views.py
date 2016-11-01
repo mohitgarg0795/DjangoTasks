@@ -5,21 +5,44 @@ import json
 
 client = MongoClient()
 
-def index(request):
-	return render(request,"fees/index.html")
-
 def checkEmpty(x):
 	if x == '':
 		return False
 	return True
 
+def getCurrTime():
+	from time import ctime
+	try:
+	    import ntplib
+	    c = ntplib.NTPClient()
+	    #response = client.request('europe.pool.ntp.org', version=3)
+	    response = c.request('pool.ntp.org')
+	    #os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.localtime(response.tx_time)))
+	    currTime = ctime(response.tx_time)
+	    print currTime.split('')
+	    return True
+	except:
+	    return False
+
+
+
+
+def index(request):
+	return render(request,"fees/index.html")
+
 def importFile(request):
 	content = json.loads(request.POST['content'])
+
+	print content
 
 	keys = content[0]
 	numOfCol = len(content[0])
 	numOfRow = len(content)
-	
+	if len(content[numOfRow-1]) == 0:		# check if last row is empty or not, last row may come due to endline char at end of penultimate entry 
+		numOfRow = numOfRow-1
+
+	print numOfCol, numOfRow
+
 	sheetName = request.POST['fileName']
 	db = client[sheetName]
 	headings = db['headings']
@@ -28,6 +51,7 @@ def importFile(request):
 	headings.insert_one({'headings': content[0]})
 	
 	for row in range(1,numOfRow):
+		print content[row]
 		context = {}
 		for col in range(numOfCol):
 			key = keys[col]
@@ -115,3 +139,10 @@ def addNewEntry(request):
 
 	return HttpResponse(str(id))
 
+def saveData(request):
+	getCurrTime()
+	content = json.loads(request.POST['data'])
+	for keys in content.keys():
+		print keys
+
+	return HttpResponse("success")
