@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
@@ -14,7 +13,6 @@ def checkEmpty(x):
 		return False
 	return True
 
-@csrf_exempt
 def importFile(request):
 	content = json.loads(request.POST['content'])
 
@@ -34,7 +32,7 @@ def importFile(request):
 		for col in range(numOfCol):
 			key = keys[col]
 			context[key] = {
-						'time': '',
+						'time': 'NA',
 						'oldVal': [],
 						'val': content[row][col],
 						'Lstatus': checkEmpty(content[row][col]) 
