@@ -29,7 +29,10 @@ $(document).ready(function(){
 		if(currentActiveSheet==undefined){
 			alert('No sheet opened');
 		}
-	})
+	});
+	$('.addEntry').on('click',function(){
+		addEntry();
+	});
 });
 
 function importFile(matrix,fileName){
@@ -128,7 +131,6 @@ function addSheetTab(fileName){
 }
 
 function render(fileName){
-	$('.row').remove();
 	var renderReady=false;
 	setTimeout(function(){
 	if(dataMatrix[fileName]!=undefined){renderReady=true;}
@@ -138,6 +140,7 @@ function render(fileName){
 		var numRows=rowKeys.length;
 		var headings=data['headings'];
 		var k=0;
+		$('.row').remove();
 		for(var i=-1;i<numRows;i++)
 		{
 				var row=document.createElement('div');
@@ -206,6 +209,15 @@ function swap(swapCol1,swapCol2){
 	})
 }
 
+function addEntry(){
+	$.ajax({
+		url:'fees/addEntry',
+		type:'GET',
+		data:{'fileName':currentActiveSheet},
+		success:function(data){console.log(data);}
+	});
+}
+
 $('.hiddenInput').on('change',function(e) {
 	   var file = e.target.files[0]; 
 	   var reader = new FileReader();
@@ -248,3 +260,13 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
+
+setInterval(function(){
+	if(currentActiveSheet!=undefined){
+		console.log('rendering');
+		updateDataMatrix(currentActiveSheet);
+		render(currentActiveSheet);
+	}else{
+		console.log('not rendering');
+	}
+},1000);
