@@ -1,6 +1,8 @@
 
 // dragdrop ,resizing,downloadcsv
 
+
+var targetId=undefined;
 var dataMatrix={};
 var currentActiveSheet=undefined;
 var existingfiles=undefined;
@@ -104,6 +106,7 @@ function fetchExistingFileNames(){
 }
 
 function updateDataMatrix(fileName){
+	dataMatrix[fileName]=undefined;
 	$.ajax({
 		url:'/fees/openFile',
 		type:'GET',
@@ -169,6 +172,9 @@ function render(fileName){
 	setTimeout(function(){
 	if(dataMatrix[fileName]!=undefined){renderReady=true;}
 	if(renderReady){
+		try{
+			console.log('rendered '+dataMatrix[currentActiveSheet][targetId]['name'].val);
+		}catch(e){console.log('not printing');}
 		var data=dataMatrix[fileName];
 		var rowKeys=Object.keys(data);
 		var numRows=rowKeys.length;
@@ -270,7 +276,7 @@ function addEntry(){
 		url:'fees/addNewEntry',
 		type:'GET',
 		data:{'fileName':currentActiveSheet},
-		success:function(data){console.log(data);renderForm(data,[]);}
+		success:function(data){console.log(data);targetId=data;renderForm(data,[]);}
 	});
 }
 
@@ -296,9 +302,8 @@ function renderForm(objId,data){
 			$(formInput).attr('readonly','true');
 			$(formInput).css({'background':'#838383'});
 		}
-		$(formInput).on('click',function(){
+		$(formInput).one('focus',function(){
 			if($('.'+this.id).hasClass('unlocked')&&$('.'+this.id).attr('beginTime')==undefined){
-				console.log('called');
 				fetchAndAddTime(this);
 			}
 		});
@@ -323,7 +328,7 @@ function fetchAndAddTime(element){
 		type:'GET',
 		success:function(data){
 			console.log(data);
-			$('.'+element.id).attr('beginTime',d);	
+			$('.'+element.id).attr('beginTime',data);	
 		}
 	});
 }
@@ -371,7 +376,7 @@ $('.hiddenInput').on('change',function(e) {
 
 setInterval(function(){
 	if(currentActiveSheet!=undefined){
-		//console.log('rendering');
+	//console.log('rendering');
 		var elements=$('.unlocked');
 		var data={};
 		for(var i=0;i<elements.length;i++)
@@ -383,6 +388,9 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
+		try{
+			console.log('saving '+dataMatrix[currentActiveSheet][targetId]['name'].val);
+		}catch(e){console.log('not printing');}
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
@@ -398,4 +406,4 @@ setInterval(function(){
 	}else{
 		//console.log('not rendering');
 	}
-},1000);
+},2000);
