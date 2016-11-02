@@ -9,7 +9,6 @@ var swapCol1=undefined,swapCol2=undefined;
 
 $(document).ready(function(){
 	// csrf
-	fetchTime();
 	function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie != '') {
@@ -299,9 +298,8 @@ function renderForm(objId,data){
 		}
 		$(formInput).on('click',function(){
 			if($('.'+this.id).hasClass('unlocked')&&$('.'+this.id).attr('beginTime')==undefined){
-				var date=new Date();
-				var d=date.getDate()+'d'+date.getMonth()+'m'+date.getFullYear()+'y'+date.getHours()+'h'+date.getMinutes();
-				$('.'+this.id).attr('beginTime',d);	
+				console.log('called');
+				fetchAndAddTime(this);
 			}
 		});
 		$(formInput).on('keydown',function(){
@@ -317,6 +315,17 @@ function renderForm(objId,data){
 		$('.entryFormContainer').append(formRow);
 	}
 	$('.entryForm').show();
+}
+
+function fetchAndAddTime(element){
+	$.ajax({
+		url:'fees/fetchLiveTime',
+		type:'GET',
+		success:function(data){
+			console.log(data);
+			$('.'+element.id).attr('beginTime',d);	
+		}
+	});
 }
 
 $('.hiddenInput').on('change',function(e) {
@@ -360,16 +369,6 @@ $('.hiddenInput').on('change',function(e) {
 	   reader.readAsText(file)
 });
 
-function fetchTime(){
-	$.ajax({
-		url:'fees/fetchLiveTime',
-		type:'GET',
-		success:function(data){
-			console.log(data);
-		}
-	});
-}
-
 setInterval(function(){
 	if(currentActiveSheet!=undefined){
 		//console.log('rendering');
@@ -384,7 +383,6 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
-		console.log(JSON.stringify(data))
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
@@ -400,4 +398,4 @@ setInterval(function(){
 	}else{
 		//console.log('not rendering');
 	}
-},10000);
+},1000);

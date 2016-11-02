@@ -180,4 +180,5 @@ def save(request):
 	return JsonResponse(context)
 
 def fetchLiveTime(request):
-	return HttpResponse(getCurrTime)
+	time=getCurrTime()
+	return HttpResponse(time)
