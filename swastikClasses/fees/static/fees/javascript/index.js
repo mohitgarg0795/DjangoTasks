@@ -173,6 +173,7 @@ function render(fileName){
 		var rowKeys=Object.keys(data);
 		var numRows=rowKeys.length;
 		var headings=data['headings'];
+		var longest={};
 		var k=0;
 		$('.row').remove();
 		for(var i=-1;i<numRows;i++)
@@ -190,6 +191,8 @@ function render(fileName){
 						$(col).addClass('col row'+k+' col'+j+' '+rowKeys[i]+'x'+headings[j]);
 						$(col).attr('objId',rowKeys[i]);
 						$(col).attr('heading',headings[j]);
+						if(longest[('col'+j)]==undefined){longest[('col'+j)]='';}
+						else{longest[('col'+j)]=longest[('col'+j)].length>val.length?longest[('col'+j)]:val;}
 						$(col).on('contextmenu',function(e){
 							e.preventDefault();
 							var row=this.className.split('col')[1].split(' ')[1];
@@ -207,6 +210,12 @@ function render(fileName){
 					$('.mainContent').append(row);
 					k++;
 			}
+		}
+		var cols=$('.col');
+		for(var i=0;i<cols.length;i++)
+		{
+			var colNo=cols[i].className.split('col')[2].split(' ')[0];
+			$(cols[i]).width(longest[('col'+colNo)].length*9);
 		}
 	}
 	},100);
@@ -283,7 +292,6 @@ function renderForm(objId,data){
 		$(formRow).append(formInput);
 		$(formInput).text(val);
 		$(formInput)[0].id=objId+'x'+headings[i];
-		console.log(objId+'x'+headings[i]);
 		if($('.'+objId+'x'+headings[i]).hasClass('locked')){
 			$(formInput).attr('readonly','true');
 			$(formInput).css({'background':'#838383'});
