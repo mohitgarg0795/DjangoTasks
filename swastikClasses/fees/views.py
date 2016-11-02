@@ -27,8 +27,8 @@ def getCurrTime():
 
 def canEditCell(t):					# return true if time difference < 60 min, the user can edit the cell
 	currTime = getCurrTime()
-	diff = currTime-t
-	if diff <= 3600:
+	diff = currTime-int(t)
+	if diff <= 180:
 		return True
 	return False
 
@@ -62,7 +62,7 @@ def importFile(request):
 		for col in range(numOfCol):
 			key = keys[col]
 			context[key] = {
-						'time': 'NA',
+						'time': '',
 						'oldVal': [],
 						'val': content[row][col],
 						'Lstatus': checkEmpty(content[row][col]) 
@@ -149,7 +149,7 @@ def save(request):
 	print getCurrTime()
 	content = json.loads(request.POST['data'])
 	sheetName = request.POST['fileName']
-	#print content
+	print content
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
@@ -159,25 +159,31 @@ def save(request):
 		id = ObjectId(id)			# convert string id to bson object ID
 		storedEntry = data.find_one({'_id': id})
 		print storedEntry
-		if storedEntry['Lstatus'] == True : 
-			continue
+		for key in content[str(id)]:
 
-		if storedEntry['time'] == '' :
-			storedEntry['time'] = content[str(id)]['time']
+			if content[str(id)][key]['time'] == '':			# ignore the cells whose time is not set
+				continue
 			
-		if canEditCell(storedEntry['time']):
-			storedEntry['val'] = content[str(id)]['val']
-			data.replace_one({'_id': id},
-							storedEntry
-						)
-		else:
-			storedEntry['Lstatus'] = True
-			data.replace_one({'_id': id},
-							storedEntry
-						)
-		context[str(id)] = storedEntry
+			#if storedEntry[key]['Lstatus'] == True : 
+			#	continue
 
-	return JsonResponse(context)
+			if storedEntry[key]['time'] == '' :
+				storedEntry[key]['time'] = content[str(id)][key]['time']
+				
+			if canEditCell(storedEntry[key]['time']):
+				storedEntry[key]['val'] = content[str(id)][key]['val']
+	
+			else:
+				storedEntry[key]['Lstatus'] = True
+				
+		data.replace_one({'_id': id},
+						 storedEntry
+					)
+		#context[str(id)] = storedEntry
+	#print context
+	return HttpResponse("success")
+	#return JsonResponse(context)
 
 def fetchLiveTime(request):
-	return HttpResponse(getCurrTime())
+	time = getCurrTime()
+	return HttpResponse(time)
