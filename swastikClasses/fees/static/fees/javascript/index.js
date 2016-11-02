@@ -373,10 +373,11 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
+		console.log(JSON.stringify(data))
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
-			data:{'data':JSON.stringify(data)},
+			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(){
 				//console.log('save completed');
 				// render
@@ -388,4 +389,4 @@ setInterval(function(){
 	}else{
 		//console.log('not rendering');
 	}
-},3000);
+},10000);
