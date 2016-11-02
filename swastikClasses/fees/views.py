@@ -115,3 +115,10 @@ def addNewEntry(request):
 
 	return HttpResponse(str(id))
 
+def save(request):
+	print('-------------')
+	print(request.POST)
+	print('-------------')
+	return HttpResponse('success')
+
+
