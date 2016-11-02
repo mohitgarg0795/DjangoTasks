@@ -363,7 +363,7 @@ setInterval(function(){
 		$.ajax({
 			url:'fees/saveData',
 			method:'POST',
-			data:{'data':JSON.stringify(data)},
+			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(){
 				console.log('save completed');
 				// render
