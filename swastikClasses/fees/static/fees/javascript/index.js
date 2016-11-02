@@ -9,6 +9,7 @@ var swapCol1=undefined,swapCol2=undefined;
 
 $(document).ready(function(){
 	// csrf
+	fetchTime();
 	function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie != '') {
@@ -358,6 +359,16 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
+
+function fetchTime(){
+	$.ajax({
+		url:'fees/fetchLiveTime',
+		type:'GET',
+		success:function(data){
+			console.log(data);
+		}
+	});
+}
 
 setInterval(function(){
 	if(currentActiveSheet!=undefined){
