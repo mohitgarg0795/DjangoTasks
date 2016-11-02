@@ -7,7 +7,7 @@ from bson import ObjectId
 client = MongoClient()
 
 def checkEmpty(x):
-	if x == '':
+	if len(x) == 0:
 		return False
 	return True
 
@@ -91,7 +91,9 @@ def openFile(request):
 				'val': i[key]['val'],
 				'status': i[key]['Lstatus']
 			}
-
+	print('-------rendered data---------------')
+	print(JsonResponse(context))
+	print('-----------------------------------')
 	return JsonResponse(context)
 
 def colSwap(request):
@@ -158,7 +160,6 @@ def save(request):
 	for id in content.keys():
 		id = ObjectId(id)			# convert string id to bson object ID
 		storedEntry = data.find_one({'_id': id})
-		print storedEntry
 		for key in content[str(id)]:
 
 			if content[str(id)][key]['time'] == '':			# ignore the cells whose time is not set

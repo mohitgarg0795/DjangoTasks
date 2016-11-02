@@ -8,6 +8,8 @@ var currentActiveSheet=undefined;
 var existingfiles=undefined;
 var swapState=false;
 var swapCol1=undefined,swapCol2=undefined;
+var popupState=false;
+var doNotRender=false;
 
 $(document).ready(function(){
 	// csrf
@@ -69,6 +71,8 @@ $(document).ready(function(){
 	});
 	$('.formClose').on('click',function(){
 		$('.entryForm').hide();
+		popupState=false;
+		doNotRender=false;
 	});
 });
 
@@ -224,6 +228,9 @@ function render(fileName){
 			$(cols[i]).width(longest[('col'+colNo)].length*9);
 		}
 	}
+	if(popupState){
+		doNotRender=true;
+	}
 	},100);
 }
 
@@ -282,7 +289,8 @@ function addEntry(){
 
 function renderForm(objId,data){
 	var headings=dataMatrix[currentActiveSheet].headings;
-	$('.formRow').remove();	
+	$('.formRow').remove();
+	popupState=true;	
 	var val='';
 	for(var i=0;i<headings.length;i++)
 	{
@@ -398,12 +406,18 @@ setInterval(function(){
 			success:function(){
 				//console.log('save completed');
 				// render
-				updateDataMatrix(currentActiveSheet);
-				render(currentActiveSheet);
+				if(!doNotRender){
+					updateDataMatrix(currentActiveSheet);
+					render(currentActiveSheet);
+				}
+				else
+				{
+					console.log('popup opened not rendering');
+				}
 			}	
 
 		})
 	}else{
 		//console.log('not rendering');
 	}
-},2000);
+},1000);
