@@ -10,6 +10,7 @@ var swapState=false;
 var swapCol1=undefined,swapCol2=undefined;
 var popupState=false;
 var doNotRender=false;
+var renderData={'fileName':'','sortKey':''}
 
 $(document).ready(function(){
 	// csrf
@@ -74,6 +75,9 @@ $(document).ready(function(){
 		popupState=false;
 		doNotRender=false;
 	});
+	$('.sortButton').on('click',function(){
+		renderData['sortKey']=$('.sort').val();
+	})
 });
 
 function importFile(matrix,fileName){
@@ -111,10 +115,11 @@ function fetchExistingFileNames(){
 
 function updateDataMatrix(fileName){
 	dataMatrix[fileName]=undefined;
+	renderData['fileName']=fileName;
 	$.ajax({
 		url:'/fees/openFile',
 		type:'GET',
-		data:{'fileName':fileName},
+		data:renderData,
 		success:function(data){
 			dataMatrix[fileName]=data;
 		}
@@ -186,6 +191,7 @@ function render(fileName){
 		var longest={};
 		var k=0;
 		$('.row').remove();
+		$('.sortKey').remove();
 		for(var i=-1;i<numRows;i++)
 		{
 				var row=document.createElement('div');
@@ -195,9 +201,10 @@ function render(fileName){
 					{
 						var col=document.createElement('div');
 						var val=headings[j];
-						if(i!=-1){val=data[rowKeys[i]][headings[j]].val}
+						if(i!=-1){val=data[rowKeys[i]][headings[j]].val;}
 						if(i!=-1){if(data[rowKeys[i]][headings[j]].status){$(col).addClass('locked');}else{$(col).addClass('unlocked');}}
 						$(col).text(val);
+						if(i==-1){appendSortHeading(val);}
 						$(col).addClass('col row'+k+' col'+j+' '+rowKeys[i]+'x'+headings[j]);
 						$(col).attr('objId',rowKeys[i]);
 						$(col).attr('heading',headings[j]);
@@ -232,6 +239,14 @@ function render(fileName){
 		doNotRender=true;
 	}
 	},100);
+}
+
+function appendSortHeading(val){
+	var option=document.createElement('option');
+	$(option).attr('val',val);
+	$(option).text(val);
+	$(option).addClass('sortKey');
+	$('.sort').append(option);
 }
 
 function swapColumns(){
