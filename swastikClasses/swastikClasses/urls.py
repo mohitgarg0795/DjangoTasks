@@ -36,5 +36,6 @@ urlpatterns = [
     url(r'^fees/openFile$', fviews.openFile),
     url(r'^fees/colSwap$', fviews.colSwap),
     url(r'^fees/addNewEntry$', fviews.addNewEntry),
-    url(r'^fees/saveData$', fviews.saveData)
+    url(r'^fees/save$', fviews.save),
+    url(r'^fees/fetchLiveTime$', fviews.fetchLiveTime),
 ]

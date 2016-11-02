@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
-from require import require
+from bson import ObjectId
 
 client = MongoClient()
 
@@ -12,19 +12,25 @@ def checkEmpty(x):
 	return True
 
 def getCurrTime():
-	from time import ctime
 	try:
 	    import ntplib
 	    c = ntplib.NTPClient()
 	    #response = client.request('europe.pool.ntp.org', version=3)
 	    response = c.request('pool.ntp.org')
 	    #os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.localtime(response.tx_time)))
-	    currTime = ctime(response.tx_time)
-	    return currTime.split(' ')[3]
+	    #currTime = ctime(response.tx_time)
+	    return int(response.tx_time)
+	    #currTime = currTime.split(' ')
+	    #return currTime[1] + ':' + currTime[2] + ':' + currTime[3]		# month:date:hr:min:sec
 	except:
-	    return False
+	    return getCurrTime()
 
-
+def canEditCell(t):					# return true if time difference < 60 min, the user can edit the cell
+	currTime = getCurrTime()
+	diff = currTime-t
+	if diff <= 3600:
+		return True
+	return False
 
 
 def index(request):
@@ -139,7 +145,7 @@ def addNewEntry(request):
 
 	return HttpResponse(str(id))
 
-def saveData(request):
+def save(request):
 	print getCurrTime()
 	content = json.loads(request.POST['data'])
 	sheetName = request.POST['fileName']
@@ -147,12 +153,31 @@ def saveData(request):
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
-
-	ObjectId = require('mongodb').ObjectID;
 	
+	context = {}
 	for id in content.keys():
-		print id
-		storedEntry = data.find_one({'_id': ObjectId(id)})
-		print storedEntry
+		id = ObjectId(id)			# convert string id to bson object ID
+		storedEntry = data.find_one({'_id': id})
 
-	return HttpResponse("success")
+		if storedEntry['Lstatus'] == True : 
+			continue
+
+		if storedEntry['time'] == '' :
+			storedEntry['time'] = content[str(id)]['time']
+			
+		if canEditCell(storedEntry['time']):
+			storedEntry['val'] = content[str(id)]['val']
+			data.replace_one({'_id': id},
+							storedEntry
+						)
+		else:
+			storedEntry['Lstatus'] = True
+			data.replace_one({'_id': id},
+							storedEntry
+						)
+		context[str(id)] = storedEntry
+
+	return JsonResponse(context)
+
+def fetchLiveTime(request):
+	return HttpResponse(getCurrTime)

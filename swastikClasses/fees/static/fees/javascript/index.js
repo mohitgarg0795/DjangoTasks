@@ -184,13 +184,14 @@ function render(fileName){
 					{
 						var col=document.createElement('div');
 						var val=headings[j];
-						if(i!=-1){console.log(data[rowKeys[i]][headings[j]]);val=data[rowKeys[i]][headings[j]].val}
+						if(i!=-1){val=data[rowKeys[i]][headings[j]].val}
 						if(i!=-1){if(data[rowKeys[i]][headings[j]].status){$(col).addClass('locked');}else{$(col).addClass('unlocked');}}
 						$(col).text(val);
 						$(col).addClass('col row'+k+' col'+j+' '+rowKeys[i]+'x'+headings[j]);
 						$(col).attr('objId',rowKeys[i]);
 						$(col).attr('heading',headings[j]);
-						$(col).on('click',function(){
+						$(col).on('contextmenu',function(e){
+							e.preventDefault();
 							var row=this.className.split('col')[1].split(' ')[1];
 							var objId=$(this).attr('objId');
 							var data=[]
@@ -282,8 +283,13 @@ function renderForm(objId,data){
 		$(formRow).append(formInput);
 		$(formInput).text(val);
 		$(formInput)[0].id=objId+'x'+headings[i];
+		console.log(objId+'x'+headings[i]);
+		if($('.'+objId+'x'+headings[i]).hasClass('locked')){
+			$(formInput).attr('readonly','true');
+			$(formInput).css({'background':'#838383'});
+		}
 		$(formInput).on('click',function(){
-			if($('.'+this.id).attr('beginTime')==undefined){
+			if($('.'+this.id).hasClass('unlocked')&&$('.'+this.id).attr('beginTime')==undefined){
 				var date=new Date();
 				var d=date.getDate()+'d'+date.getMonth()+'m'+date.getFullYear()+'y'+date.getHours()+'h'+date.getMinutes();
 				$('.'+this.id).attr('beginTime',d);	
@@ -292,12 +298,12 @@ function renderForm(objId,data){
 		$(formInput).on('keydown',function(){
 			var heading=this.id.split('x')[1];
 			dataMatrix[currentActiveSheet][objId][heading].val=this.value;
-			$('.'+this.id).css({'background':'#DEDEDE'})
+			$('.'+this.id).css({'background':'#DEDEDE'});
 		});
 		$(formInput).on('keyup',function(){
 			var heading=this.id.split('x')[1];
 			dataMatrix[currentActiveSheet][objId][heading].val=this.value;
-			$('.'+this.id).css({'background':'#DEDEDE'})
+			$('.'+this.id).css({'background':'#DEDEDE'});
 		});
 		$('.entryFormContainer').append(formRow);
 	}
@@ -347,7 +353,7 @@ $('.hiddenInput').on('change',function(e) {
 
 setInterval(function(){
 	if(currentActiveSheet!=undefined){
-		console.log('rendering');
+		//console.log('rendering');
 		var elements=$('.unlocked');
 		var data={};
 		for(var i=0;i<elements.length;i++)
@@ -361,11 +367,11 @@ setInterval(function(){
 		}
 		console.log(JSON.stringify(data))
 		$.ajax({
-			url:'fees/saveData',
+			url:'fees/save',
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(){
-				console.log('save completed');
+				//console.log('save completed');
 				// render
 				updateDataMatrix(currentActiveSheet);
 				render(currentActiveSheet);
@@ -373,6 +379,6 @@ setInterval(function(){
 
 		})
 	}else{
-		console.log('not rendering');
+		//console.log('not rendering');
 	}
-},20000);
+},10000);
