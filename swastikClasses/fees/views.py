@@ -158,7 +158,7 @@ def save(request):
 	for id in content.keys():
 		id = ObjectId(id)			# convert string id to bson object ID
 		storedEntry = data.find_one({'_id': id})
-
+		print storedEntry
 		if storedEntry['Lstatus'] == True : 
 			continue
 
@@ -180,4 +180,4 @@ def save(request):
 	return JsonResponse(context)
 
 def fetchLiveTime(request):
-	return HttpResponse(getCurrTime)
+	return HttpResponse(getCurrTime())
