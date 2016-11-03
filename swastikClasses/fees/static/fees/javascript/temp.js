@@ -355,7 +355,7 @@ function renderPartial(fileName,data){
 		for(var j=0;j<values.length;j++)
 		{
 			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
-			if(data[currentRowKey][values[j]].val){
+			if(data[currentRowKey][values[j]].status){
 				$('.'+currentRowKey+'x'+values[j]).addClass('locked');	
 			}
 		}
