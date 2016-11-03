@@ -38,16 +38,11 @@ def index(request):
 
 def importFile(request):
 	content = json.loads(request.POST['content'])
-
-	print content
-
 	keys = content[0]
 	numOfCol = len(content[0])
 	numOfRow = len(content)
 	if numOfRow>1 and len(content[numOfRow-1]) != numOfCol:		# check if last row is empty or not, last row may come due to endline char at end of penultimate entry 
 		numOfRow = numOfRow-1
-
-	print numOfCol, numOfRow
 
 	sheetName = request.POST['fileName']
 	db = client[sheetName]
@@ -76,24 +71,27 @@ def existingFileNames(request):
 
 def openFile(request):
 	sheetName = request.GET['fileName']
+	sortKey = request.GET['sortKey']
 	db = client[sheetName] 
 	headings = db['headings']
 	data = db['data']
 	keys = headings.find()[0]['headings']
+	if sortKey == '':
+		sortKey = keys[0]
 	context = {}
 	context['headings'] = keys
-
-	for i in data.find():
+	#context['sortedID'] = []
+	for i in data.find().sort(sortKey,1):
 		id = str(i['_id'])
+		#context['sortedID'].append(id)	
 		context[id] = {}
 		for key in keys:
 			context[id][key] = {
 				'val': i[key]['val'],
 				'status': i[key]['Lstatus']
 			}
-	print('-------rendered data---------------')
-	print(JsonResponse(context))
-	print('-----------------------------------')
+
+	#print context
 	return JsonResponse(context)
 
 def colSwap(request):
@@ -162,20 +160,23 @@ def save(request):
 		storedEntry = data.find_one({'_id': id})
 		for key in content[str(id)]:
 
-			if content[str(id)][key]['time'] == '':			# ignore the cells whose time is not set
+			if storedEntry[key]['Lstatus'] == True :		# in case anyone changes js and changes class intentionally to unlock cell 
 				continue
-			
-			#if storedEntry[key]['Lstatus'] == True : 
-			#	continue
+
+			if content[str(id)][key]['time'] == '' and storedEntry[key]['time'] == '':			# ignore the cells whose time is not set
+				continue
 
 			if storedEntry[key]['time'] == '' :
 				storedEntry[key]['time'] = content[str(id)][key]['time']
 				
 			if canEditCell(storedEntry[key]['time']):
 				storedEntry[key]['val'] = content[str(id)][key]['val']
-	
 			else:
-				storedEntry[key]['Lstatus'] = True
+				if content[str(id)][key]['val'] == '':			# when cell if empty after timeover, it should be still editable
+					storedEntry[key]['time'] = ''
+					storedEntry[key]['Lstatus'] = False
+				else:	
+					storedEntry[key]['Lstatus'] = True
 				
 		data.replace_one({'_id': id},
 						 storedEntry
