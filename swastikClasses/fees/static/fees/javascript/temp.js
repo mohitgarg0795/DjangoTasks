@@ -1,6 +1,4 @@
 
-// dragdrop ,resizing,downloadcsv
-
 
 var targetId=undefined;
 var dataMatrix={};
@@ -43,6 +41,7 @@ $(document).ready(function(){
         }
     });
 
+
 	$('.importFile').on('click',function(){
 		$('.hiddenInput').click();
 	});
@@ -51,7 +50,6 @@ $(document).ready(function(){
 	});
 	$('.confirmOpenSheet').on('click',function(){
 		var file=$('.openSheet').val();
-		updateDataMatrix(file);
 		addSheetTab(file);
 		render(file);
 		$('.existingFileContainer').hide();
@@ -80,20 +78,6 @@ $(document).ready(function(){
 	})
 });
 
-function importFile(matrix,fileName){
-	matrix=JSON.stringify(matrix);
-	$.ajax({
-		url:'fees/importFile',
-		type:'POST',
-		data:{'fileName':fileName,'content':matrix},
-		success:function(data){
-			updateDataMatrix(fileName); // to reflect changes in database into the dataMatrix
-			addSheetTab(fileName); // to add a sheet Tab in the sheetTabWindow
-			render(fileName); // to render dataMatrix to screen
-		}
-	})
-}
-
 function fetchExistingFileNames(){
 	$.ajax({
 		url:'fees/existingFileNames',
@@ -113,8 +97,7 @@ function fetchExistingFileNames(){
 	});	
 }
 
-function updateDataMatrix(fileName){
-	dataMatrix[fileName]=undefined;
+function render(fileName){
 	renderData['fileName']=fileName;
 	$.ajax({
 		url:'/fees/openFile',
@@ -122,73 +105,18 @@ function updateDataMatrix(fileName){
 		data:renderData,
 		success:function(data){
 			dataMatrix[fileName]=data;
+			renderDependency(fileName);
 		}
 	});
 }
 
-function addSheetTab(fileName){
-	$('.empty').hide();
-	var sheetTab=document.createElement('div');
-	var sheetTabName=document.createElement('span');
-	var sheetTabClose=document.createElement('span');
-	$(sheetTab).addClass('sheetTab');
-	$(sheetTabName).addClass('sheetTabName');
-	$(sheetTabClose).addClass('sheetTabClose fa fa-times');
-	$(sheetTab).append(sheetTabName);
-	$(sheetTab).append(sheetTabClose);
-	$(sheetTabName).text(fileName);
-	$(sheetTab).on('click',function(){
-		currentActiveSheet=$($(this).children()[0]).text();
-		$('.activeSheetTab').removeClass('activeSheetTab');
-		$(this).addClass('activeSheetTab');
-		dataMatrix[currentActiveSheet]=undefined;
-		updateDataMatrix(currentActiveSheet);
-		render(currentActiveSheet);
-	});
-	$(sheetTabClose).on('click',function(){
-		if($(this.parentElement).hasClass('activeSheetTab')){
-			var tabNum=$(this.parentElement).index();
-			var totalTabs=$(this.parentElement.parentElement).children().length;
-			var targetTab=tabNum-1;
-			if(targetTab==-1){
-				targetTab=tabNum+1;
-			}
-			if(targetTab==totalTabs){
-				currentActiveSheet=undefined;
-				$('.empty').show();
-				$('.row').remove();
-				$(this.parentElement).remove();
-			}
-			else
-			{
-				$($(this.parentElement.parentElement).children()[targetTab]).click();
-				$(this.parentElement).remove();
-			}
-		}
-		else
-		{
-			$(this.parentElement).remove();
-		}
-	});
-	$('.activeSheetTab').removeClass('activeSheetTab');
-	$(sheetTab).addClass('activeSheetTab');
-	currentActiveSheet=fileName;
-	$('.sheetSwitchWindow').append(sheetTab);
-}
+var longest={};
 
-function render(fileName){
-	var renderReady=false;
-	setTimeout(function(){
-	if(dataMatrix[fileName]!=undefined){renderReady=true;}
-	if(renderReady){
-		try{
-			console.log('rendered '+dataMatrix[currentActiveSheet][targetId]['name'].val);
-		}catch(e){console.log('not printing');}
+function renderDependency(fileName){
 		var data=dataMatrix[fileName];
 		var rowKeys=Object.keys(data);
 		var numRows=rowKeys.length;
 		var headings=data['headings'];
-		var longest={};
 		var k=0;
 		$('.row').remove();
 		$('.sortKey').remove();
@@ -234,11 +162,54 @@ function render(fileName){
 			var colNo=cols[i].className.split('col')[2].split(' ')[0];
 			$(cols[i]).width(longest[('col'+colNo)].length*9);
 		}
-	}
-	if(popupState){
-		doNotRender=true;
-	}
-	},100);
+}
+
+function addSheetTab(fileName){
+	$('.empty').hide();
+	var sheetTab=document.createElement('div');
+	var sheetTabName=document.createElement('span');
+	var sheetTabClose=document.createElement('span');
+	$(sheetTab).addClass('sheetTab');
+	$(sheetTabName).addClass('sheetTabName');
+	$(sheetTabClose).addClass('sheetTabClose fa fa-times');
+	$(sheetTab).append(sheetTabName);
+	$(sheetTab).append(sheetTabClose);
+	$(sheetTabName).text(fileName);
+	$(sheetTab).on('click',function(){
+		currentActiveSheet=$($(this).children()[0]).text();
+		$('.activeSheetTab').removeClass('activeSheetTab');
+		$(this).addClass('activeSheetTab');
+		render(currentActiveSheet);
+	});
+	$(sheetTabClose).on('click',function(){
+		if($(this.parentElement).hasClass('activeSheetTab')){
+			var tabNum=$(this.parentElement).index();
+			var totalTabs=$(this.parentElement.parentElement).children().length;
+			var targetTab=tabNum-1;
+			if(targetTab==-1){
+				targetTab=tabNum+1;
+			}
+			if(targetTab==totalTabs){
+				currentActiveSheet=undefined;
+				$('.empty').show();
+				$('.row').remove();
+				$(this.parentElement).remove();
+			}
+			else
+			{
+				$($(this.parentElement.parentElement).children()[targetTab]).click();
+				$(this.parentElement).remove();
+			}
+		}
+		else
+		{
+			$(this.parentElement).remove();
+		}
+	});
+	$('.activeSheetTab').removeClass('activeSheetTab');
+	$(sheetTab).addClass('activeSheetTab');
+	currentActiveSheet=fileName;
+	$('.sheetSwitchWindow').append(sheetTab);
 }
 
 function appendSortHeading(val){
@@ -291,15 +262,6 @@ function swap(swapCol1,swapCol2){
 			$('.swapColumns').css({'color':'#FFFFFF'});
 		}
 	})
-}
-
-function addEntry(){
-	$.ajax({
-		url:'fees/addNewEntry',
-		type:'GET',
-		data:{'fileName':currentActiveSheet},
-		success:function(data){console.log(data)}//;targetId=data;renderForm(data,[]);updateDataMatrix(currentActiveSheet)}
-	});
 }
 
 function renderForm(objId,data){
@@ -356,6 +318,125 @@ function fetchAndAddTime(element){
 	});
 }
 
+
+setInterval(function(){
+	if(currentActiveSheet!=undefined){
+		var elements=$('.unlocked');
+		var data={};
+		for(var i=0;i<elements.length;i++)
+		{
+			var objId=$(elements[i]).attr('objId');
+			var heading=$(elements[i]).attr('heading');
+			if(data[objId]==undefined){data[objId]={};}
+			if(data[objId][heading]==undefined){data[objId][heading]={}}
+			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
+			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
+		}
+		$.ajax({
+			url:'fees/save',
+			method:'POST',
+			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
+			success:function(data){
+				if(!doNotRender){
+					renderPartial(currentActiveSheet,data);
+				}
+			}	
+		});
+	}
+},1000);
+
+function renderPartial(fileName,data){
+	console.log(data);
+	var rowKeys=Object.keys(data);
+	for(var i=0;i<rowKeys.length;i++)
+	{
+		var currentRowKey=rowKeys[i];
+		var values=Object.keys(data[currentRowKey]);
+		for(var j=0;j<values.length;j++)
+		{
+			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
+		}
+
+	}
+}
+
+function importFile(matrix,fileName){
+	matrix=JSON.stringify(matrix);
+	$.ajax({
+		url:'fees/importFile',
+		type:'POST',
+		data:{'fileName':fileName,'content':matrix},
+		success:function(data){
+			addSheetTab(fileName); // to add a sheet Tab in the sheetTabWindow
+			render(fileName); // to render dataMatrix to screen
+		}
+	})
+}
+
+function addEntry(){
+	$.ajax({
+		url:'fees/addNewEntry',
+		type:'GET',
+		data:{'fileName':currentActiveSheet},
+		success:function(data){
+			console.log(data);
+			targetId=data;
+			dataMatrix[currentActiveSheet][data]={};
+			var headings=dataMatrix[currentActiveSheet].headings;
+			for(var i=0;i<headings.length;i++)
+			{
+				dataMatrix[currentActiveSheet][data][headings[i]]={'val':'','time':''};
+			}
+			var row=document.createElement('div');
+			$(row).addClass('row');
+			k=$('.row').length;
+			for(var j=0;j<headings.length;j++)
+			{
+				var col=document.createElement('div');
+				var val=headings[j];
+				$(col).addClass('unlocked');
+				$(col).text('');
+				$(col).addClass('col row'+k+' col'+j+' '+data+'x'+headings[j]);
+				$(col).attr('objId',data);
+				$(col).attr('heading',headings[j]);
+				$(col).on('contextmenu',function(e){
+					e.preventDefault();
+					var row=this.className.split('col')[1].split(' ')[1];
+					var objId=$(this).attr('objId');
+					var data=[]
+					var elements=$('.'+row);
+					for(var k=0;k<elements.length;k++){
+						data.push($(elements[k]).text());
+					}
+					renderForm(objId,data);
+				})
+				col.id=k+'x'+j;
+				$(row).append(col);
+			}
+			$('.mainContent').append(row);
+			var cols=$('.col');
+			for(var i=0;i<cols.length;i++)
+			{
+				var colNo=cols[i].className.split('col')[2].split(' ')[0];
+				$(cols[i]).width(longest[('col'+colNo)].length*9);
+			}
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import logic
 $('.hiddenInput').on('change',function(e) {
 	   var file = e.target.files[0]; 
 	   var reader = new FileReader();
@@ -396,40 +477,3 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
-
-setInterval(function(){
-	if(currentActiveSheet!=undefined){
-	//console.log('rendering');
-		var elements=$('.unlocked');
-		var data={};
-		for(var i=0;i<elements.length;i++)
-		{
-			var objId=$(elements[i]).attr('objId');
-			var heading=$(elements[i]).attr('heading');
-			if(data[objId]==undefined){data[objId]={};}
-			if(data[objId][heading]==undefined){data[objId][heading]={}}
-			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
-			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
-		}
-		$.ajax({
-			url:'fees/save',
-			method:'POST',
-			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
-			success:function(){
-				//console.log('save completed');
-				// render
-				if(!doNotRender){
-					updateDataMatrix(currentActiveSheet);
-					render(currentActiveSheet);
-				}
-				else
-				{
-					console.log('popup opened not rendering');
-				}
-			}	
-
-		})
-	}else{
-		//console.log('not rendering');
-	}
-},1000);

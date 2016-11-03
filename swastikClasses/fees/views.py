@@ -181,10 +181,13 @@ def save(request):
 		data.replace_one({'_id': id},
 						 storedEntry
 					)
-		#context[str(id)] = storedEntry
-	#print context
-	return HttpResponse("success")
-	#return JsonResponse(context)
+		context[str(id)] = storedEntry
+		context[str(id)].pop('_id',None)
+	print('------------')
+	print context
+	print('------------')
+	#return HttpResponse("success")
+	return JsonResponse(context)
 
 def fetchLiveTime(request):
 	time = getCurrTime()
