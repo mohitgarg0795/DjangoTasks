@@ -359,8 +359,10 @@ function renderPartial(fileName,data){
 			if(data[currentRowKey][values[j]].Lstatus){
 				$('.'+currentRowKey+'x'+values[j]).addClass('locked');	
 			}
+			if(data[currentRowKey][values[j]].time=''){
+				$('.'+currentRowKey+'x'+values[j]).attr('beginTime',undefined);
+			}
 		}
-
 	}
 }
 
