@@ -28,7 +28,7 @@ def getCurrTime():
 def canEditCell(t):					# return true if time difference < 60 min, the user can edit the cell
 	currTime = getCurrTime()
 	diff = currTime-int(t)
-	if diff <= 180:
+	if diff <= 30:
 		return True
 	return False
 
@@ -149,7 +149,7 @@ def save(request):
 	print getCurrTime()
 	content = json.loads(request.POST['data'])
 	sheetName = request.POST['fileName']
-	print content
+	#print content
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
@@ -171,20 +171,26 @@ def save(request):
 				
 			if canEditCell(storedEntry[key]['time']):
 				storedEntry[key]['val'] = content[str(id)][key]['val']
+				#print "cell not locked till now"
+				#print content[str(id)]
 			else:
 				if content[str(id)][key]['val'] == '':			# when cell if empty after timeover, it should be still editable
+					#print "cell again editable"
 					storedEntry[key]['time'] = ''
 					storedEntry[key]['Lstatus'] = False
 				else:	
+					#print "cell locked"
+					#print content
 					storedEntry[key]['Lstatus'] = True
 				
-		data.replace_one({'_id': id},
-						 storedEntry
-					)
+		#data.replace_one({'_id': id},
+		#				 storedEntry
+		#			)
+		data.save(storedEntry)
 		context[str(id)] = storedEntry
 		context[str(id)].pop('_id',None)
 	print('------------')
-	print context
+	#print context
 	print('------------')
 	#return HttpResponse("success")
 	return JsonResponse(context)

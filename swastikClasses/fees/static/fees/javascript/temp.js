@@ -332,12 +332,12 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
-		console.log(data);
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(data){
+				console.log(data)
 				if(!doNotRender){
 					renderPartial(currentActiveSheet,data);
 				}
@@ -355,7 +355,7 @@ function renderPartial(fileName,data){
 		for(var j=0;j<values.length;j++)
 		{
 			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
-			if(data[currentRowKey][values[j]].val){
+			if(data[currentRowKey][values[j]].Lstatus){
 				$('.'+currentRowKey+'x'+values[j]).addClass('locked');	
 			}
 		}

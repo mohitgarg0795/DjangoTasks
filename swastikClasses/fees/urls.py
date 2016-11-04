@@ -16,20 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import tracker.views as tviews
 import fees.views as fviews
-import manager.views as mviews
 
 urlpatterns = [
-	url(r'^admin/', admin.site.urls),
-	url(r'^update$', tviews.update),
-    url(r'^fetch$', tviews.fetch),
-	url(r'^$', tviews.index),
-    url(r'^fees$',fviews.index),
-    url(r'^manager$', mviews.index),
-    url(r'^updateData$', mviews.updateData),
-    url(r'^openSheet$', mviews.openSheet),
-    url(r'^addCol$', mviews.addCol),
-    url(r'^delCol$', mviews.deleteCol),
-    url(r'^fees/', include('fees.urls')),
+    url(r'^importFile$', fviews.importFile),
+    url(r'^existingFileNames$', fviews.existingFileNames),
+    url(r'^openFile$', fviews.openFile),
+    url(r'^colSwap$', fviews.colSwap),
+    url(r'^addNewEntry$', fviews.addNewEntry),
+    url(r'^save$', fviews.save),
+    url(r'^fetchLiveTime$', fviews.fetchLiveTime),
 ]
