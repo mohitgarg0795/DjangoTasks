@@ -337,6 +337,7 @@ setInterval(function(){
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(data){
+				console.log(data)
 				if(!doNotRender){
 					renderPartial(currentActiveSheet,data);
 				}
@@ -355,7 +356,6 @@ function renderPartial(fileName,data){
 		for(var j=0;j<values.length;j++)
 		{
 			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
-			console.log(data[currentRowKey][values[j]].val+':'+data[currentRowKey][values[j]].status);
 			if(data[currentRowKey][values[j]].Lstatus){
 				$('.'+currentRowKey+'x'+values[j]).addClass('locked');	
 			}
