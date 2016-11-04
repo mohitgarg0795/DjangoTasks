@@ -298,7 +298,7 @@ function addEntry(){
 		url:'fees/addNewEntry',
 		type:'GET',
 		data:{'fileName':currentActiveSheet},
-		success:function(data){console.log(data)}//;targetId=data;renderForm(data,[]);updateDataMatrix(currentActiveSheet)}
+		success:function(data){targetId=data;renderForm(data,[]);updateDataMatrix(currentActiveSheet)}
 	});
 }
 

@@ -28,7 +28,7 @@ def getCurrTime():
 def canEditCell(t):					# return true if time difference < 60 min, the user can edit the cell
 	currTime = getCurrTime()
 	diff = currTime-int(t)
-	if diff <= 180:
+	if diff <= 20:
 		return True
 	return False
 
