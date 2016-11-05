@@ -75,6 +75,7 @@ $(document).ready(function(){
 	});
 	$('.sortButton').on('click',function(){
 		renderData['sortKey']=$('.sort').val();
+		render(currentActiveSheet);
 	})
 });
 
@@ -97,30 +98,32 @@ function fetchExistingFileNames(){
 	});	
 }
 
+var longest={};
+
 function render(fileName){
+	longest={};
 	renderData['fileName']=fileName;
 	$.ajax({
 		url:'/fees/openFile',
 		type:'GET',
 		data:renderData,
 		success:function(data){
+			console.log(data);
 			dataMatrix[fileName]=data;
 			renderDependency(fileName);
 		}
 	});
 }
 
-var longest={};
-
 function renderDependency(fileName){
 		var data=dataMatrix[fileName];
-		var rowKeys=Object.keys(data);
-		var numRows=rowKeys.length;
+		var rowKeys=data['sortedID'];
+		var numRows=rowKeys.length-1;
 		var headings=data['headings'];
 		var k=0;
 		$('.row').remove();
 		$('.sortKey').remove();
-		for(var i=-1;i<numRows;i++)
+		for(var i=-1;i<numRows+1;i++)
 		{
 				var row=document.createElement('div');
 				$(row).addClass('row');
@@ -260,6 +263,7 @@ function swap(swapCol1,swapCol2){
 		success:function(data){
 			$('.activeCol').removeClass('activeCol');
 			$('.swapColumns').css({'color':'#FFFFFF'});
+			render(currentActiveSheet);
 		}
 	})
 }
@@ -312,7 +316,6 @@ function fetchAndAddTime(element){
 		url:'fees/fetchLiveTime',
 		type:'GET',
 		success:function(data){
-			console.log(data);
 			$('.'+element.id).attr('beginTime',data);	
 		}
 	});
@@ -333,13 +336,11 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
-		console.log(data)
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(data){
-				//console.log(data)
 				if(!doNotRender){
 					renderPartial(currentActiveSheet,data);
 				}
@@ -350,7 +351,6 @@ setInterval(function(){
 },1000);
 
 function renderPartial(fileName,data){
-	//console.log(data);
 	var rowKeys=Object.keys(data);
 	for(var i=0;i<rowKeys.length;i++)
 	{
@@ -365,7 +365,6 @@ function renderPartial(fileName,data){
 			if(longest[('col'+k)]==undefined){longest[('col'+k)]='';}
 			else if(longest[('col'+k)].length<val.length){
 					longest[('col'+k)]=val;
-					console.log('index:'+k);
 					$('.col'+k).width(val.length*9)		
 			}		
 			$('.'+currentRowKey+'x'+values[j]).text(val);
@@ -491,7 +490,6 @@ $('.hiddenInput').on('change',function(e) {
 	   	 		matrix[i].push(content);
 	   	 		content='';
 	   	 	}
-	   	 	console.log(matrix);
 	   	 	importFile(matrix,fileName);        
 	   	}
 	   reader.readAsText(file)

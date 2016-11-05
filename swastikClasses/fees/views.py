@@ -80,10 +80,10 @@ def openFile(request):
 		sortKey = keys[0]
 	context = {}
 	context['headings'] = keys
-	#context['sortedID'] = []
+	context['sortedID'] = []
 	for i in data.find().sort(sortKey,1):
 		id = str(i['_id'])
-		#context['sortedID'].append(id)	
+		context['sortedID'].append(id)	
 		context[id] = {}
 		for key in keys:
 			context[id][key] = {
@@ -91,7 +91,7 @@ def openFile(request):
 				'status': i[key]['Lstatus']
 			}
 
-	#print context
+	print context
 	return JsonResponse(context)
 
 def colSwap(request):
