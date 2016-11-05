@@ -318,9 +318,10 @@ function fetchAndAddTime(element){
 	});
 }
 
-
+var readyState=true;
 setInterval(function(){
-	if(currentActiveSheet!=undefined){
+	if(currentActiveSheet!=undefined&&readyState){
+		readyState=false;
 		var elements=$('.unlocked');
 		var data={};
 		for(var i=0;i<elements.length;i++)
@@ -342,8 +343,9 @@ setInterval(function(){
 				if(!doNotRender){
 					renderPartial(currentActiveSheet,data);
 				}
-			}	
-		});
+				readyState=true;
+			}
+		});	
 	}
 },1000);
 
@@ -357,10 +359,11 @@ function renderPartial(fileName,data){
 		for(var j=0;j<values.length;j++)
 		{
 			var val=data[currentRowKey][values[j]].val;
-			if(longest[('col'+j)]==undefined){longest[('col'+j)]='';}
-			else if(longest[('col'+j)].length<val.length){
-					longest[('col'+j)].length=val.length;
-					$('.col'+j).width(val.length)		
+			if(longest[('col'+i)]==undefined){longest[('col'+i)]='';}
+			else if(longest[('col'+i)].length<val.length){
+					console.log('index:'+i);
+					longest[('col'+i)]=val;
+					$('.col'+i).width(val.length*9)		
 			}		
 			$('.'+currentRowKey+'x'+values[j]).text(val);
 			if(data[currentRowKey][values[j]].Lstatus){
