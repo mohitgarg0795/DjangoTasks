@@ -146,14 +146,17 @@ def addNewEntry(request):
 	return HttpResponse(str(id))
 
 def save(request):
-	print getCurrTime()
 	content = json.loads(request.POST['data'])
 	sheetName = request.POST['fileName']
-	#print content
+	import pendingUpdates as pU
+	pU.check(sheetName)
+	print content
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']
 	
+
+
 	context = {}
 	for id in content.keys():
 		id = ObjectId(id)			# convert string id to bson object ID
