@@ -356,15 +356,19 @@ function renderPartial(fileName,data){
 		var values=Object.keys(data[currentRowKey]);
 		for(var j=0;j<values.length;j++)
 		{
-			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
+			var val=data[currentRowKey][values[j]].val;
+			if(longest[('col'+j)]==undefined){longest[('col'+j)]='';}
+			else if(longest[('col'+j)].length<val.length){
+					longest[('col'+j)].length=val.length;
+					$('.col'+j).width(val.length)		
+			}		
+			$('.'+currentRowKey+'x'+values[j]).text(val);
 			if(data[currentRowKey][values[j]].Lstatus){
 				$('.'+currentRowKey+'x'+values[j]).addClass('locked');
 				$('.'+currentRowKey+'x'+values[j]).removeClass('unlocked');	
 			}
 			if(data[currentRowKey][values[j]].time==''){
-				//console.log('time is undefined:'+data[currentRowKey][values[j]].val);
 				$('.'+currentRowKey+'x'+values[j]).removeAttr('beginTime');
-				//console.log($('.'+currentRowKey+'x'+values[j]).time)
 			}
 		}
 	}
