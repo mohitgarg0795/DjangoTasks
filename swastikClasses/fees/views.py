@@ -32,6 +32,9 @@ def canEditCell(t):					# return true if time difference < 60 min, the user can 
 		return True
 	return False
 
+#def update():
+
+
 
 def index(request):
 	return render(request,"fees/index.html")
@@ -80,10 +83,10 @@ def openFile(request):
 		sortKey = keys[0]
 	context = {}
 	context['headings'] = keys
-	#context['sortedID'] = []
+	context['sortedID'] = []
 	for i in data.find().sort(sortKey,1):
 		id = str(i['_id'])
-		#context['sortedID'].append(id)	
+		context['sortedID'].append(id)	
 		context[id] = {}
 		for key in keys:
 			context[id][key] = {
@@ -91,7 +94,7 @@ def openFile(request):
 				'status': i[key]['Lstatus']
 			}
 
-	#print context
+	print context
 	return JsonResponse(context)
 
 def colSwap(request):
@@ -148,9 +151,7 @@ def addNewEntry(request):
 def save(request):
 	content = json.loads(request.POST['data'])
 	sheetName = request.POST['fileName']
-	import pendingUpdates as pU
-	pU.check(sheetName)
-	print content
+	
 	db = client[sheetName]
 	headings = db['headings']
 	data = db['data']

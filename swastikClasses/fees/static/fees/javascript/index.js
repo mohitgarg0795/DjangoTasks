@@ -80,7 +80,7 @@ $(document).ready(function(){
 
 function fetchExistingFileNames(){
 	$.ajax({
-		url:'fees/existingFileNames',
+		url:'/fees/existingFileNames',
 		type:'GET',
 		success:function(data){
 			data=JSON.parse(data);
@@ -97,7 +97,10 @@ function fetchExistingFileNames(){
 	});	
 }
 
+var longest = {};
+
 function render(fileName){
+	longest = {}
 	renderData['fileName']=fileName;
 	$.ajax({
 		url:'/fees/openFile',
@@ -109,8 +112,6 @@ function render(fileName){
 		}
 	});
 }
-
-var longest={};
 
 function renderDependency(fileName){
 		var data=dataMatrix[fileName];
@@ -254,12 +255,13 @@ $(document).on('mousedown',function(e){
 
 function swap(swapCol1,swapCol2){	
 	$.ajax({
-		url:'fees/colSwap',
+		url:'/fees/colSwap',
 		type:'GET',
 		data:{'heading1':swapCol1,'heading2':swapCol2,'fileName':currentActiveSheet},
 		success:function(data){
 			$('.activeCol').removeClass('activeCol');
 			$('.swapColumns').css({'color':'#FFFFFF'});
+			render(currentActiveSheet);
 		}
 	})
 }
@@ -309,7 +311,7 @@ function renderForm(objId,data){
 
 function fetchAndAddTime(element){
 	$.ajax({
-		url:'fees/fetchLiveTime',
+		url:'/fees/fetchLiveTime',
 		type:'GET',
 		success:function(data){
 			console.log(data);
