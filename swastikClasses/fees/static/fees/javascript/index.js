@@ -332,12 +332,13 @@ setInterval(function(){
 			data[objId][heading].val=dataMatrix[currentActiveSheet][objId][heading].val;
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
+		console.log(data)
 		$.ajax({
 			url:'fees/save',
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(data){
-				console.log(data)
+				//console.log(data)
 				if(!doNotRender){
 					renderPartial(currentActiveSheet,data);
 				}
@@ -347,7 +348,7 @@ setInterval(function(){
 },1000);
 
 function renderPartial(fileName,data){
-	console.log(data);
+	//console.log(data);
 	var rowKeys=Object.keys(data);
 	for(var i=0;i<rowKeys.length;i++)
 	{
@@ -357,10 +358,13 @@ function renderPartial(fileName,data){
 		{
 			$('.'+currentRowKey+'x'+values[j]).text(data[currentRowKey][values[j]].val);
 			if(data[currentRowKey][values[j]].Lstatus){
-				$('.'+currentRowKey+'x'+values[j]).addClass('locked');	
+				$('.'+currentRowKey+'x'+values[j]).addClass('locked');
+				$('.'+currentRowKey+'x'+values[j]).removeClass('unlocked');	
 			}
-			if(data[currentRowKey][values[j]].time=''){
-				$('.'+currentRowKey+'x'+values[j]).attr('beginTime',undefined);
+			if(data[currentRowKey][values[j]].time==''){
+				//console.log('time is undefined:'+data[currentRowKey][values[j]].val);
+				$('.'+currentRowKey+'x'+values[j]).removeAttr('beginTime');
+				//console.log($('.'+currentRowKey+'x'+values[j]).time)
 			}
 		}
 	}

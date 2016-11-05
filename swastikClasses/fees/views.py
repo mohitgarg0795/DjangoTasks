@@ -175,7 +175,7 @@ def save(request):
 				#print content[str(id)]
 			else:
 				if content[str(id)][key]['val'] == '':			# when cell if empty after timeover, it should be still editable
-					#print "cell again editable"
+					print "cell again editable"
 					storedEntry[key]['time'] = ''
 					storedEntry[key]['Lstatus'] = False
 				else:	
