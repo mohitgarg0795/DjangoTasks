@@ -356,14 +356,17 @@ function renderPartial(fileName,data){
 	{
 		var currentRowKey=rowKeys[i];
 		var values=Object.keys(data[currentRowKey]);
+		var k=undefined;
 		for(var j=0;j<values.length;j++)
 		{
+			k=$('.'+currentRowKey+'x'+values[j])[0].className.split('col')[2].split(' ')[0];
 			var val=data[currentRowKey][values[j]].val;
-			if(longest[('col'+i)]==undefined){longest[('col'+i)]='';}
-			else if(longest[('col'+i)].length<val.length){
-					console.log('index:'+i);
-					longest[('col'+i)]=val;
-					$('.col'+i).width(val.length*9)		
+			var targetDiv=$();
+			if(longest[('col'+k)]==undefined){longest[('col'+k)]='';}
+			else if(longest[('col'+k)].length<val.length){
+					longest[('col'+k)]=val;
+					console.log('index:'+k);
+					$('.col'+k).width(val.length*9)		
 			}		
 			$('.'+currentRowKey+'x'+values[j]).text(val);
 			if(data[currentRowKey][values[j]].Lstatus){
