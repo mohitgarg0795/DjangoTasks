@@ -1,78 +1,55 @@
 
-
-var targetId=undefined;
-var dataMatrix={};
-var currentActiveSheet=undefined;
-var existingfiles=undefined;
-var swapState=false;
-var swapCol1=undefined,swapCol2=undefined;
-var popupState=false;
-var doNotRender=false;
-var renderData={'fileName':'','sortKey':''}
+var dataMatrix={};   // stores current state of cells
+var currentActiveSheet=undefined;  // stores the name of sheet that is currently active  		
+var existingfiles=undefined; // stores files that exist in database, used at time of opening files
+var swapState=false; // specifies swapstate mode 
+var swapCol1=undefined,swapCol2=undefined; // stores name of two headings to be swapped
+var popupState=false; // specifies if popup is opened
+var renderData={'fileName':'','sortKey':''} // renderData is data sent to openFile
+var longest={}; // dictionary that maps column to string with max length in that column
 
 $(document).ready(function(){
-	// csrf
-	function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    var csrftoken = getCookie('csrftoken');
-
-    function csrfSafeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-
+	
+	manageCSRF(); // to prevent internal server error on POST requests
 
 	$('.importFile').on('click',function(){
 		$('.hiddenInput').click();
 	});
+
 	$('.openFile').on('click',function(){
 		fetchExistingFileNames();
 	});
+
 	$('.confirmOpenSheet').on('click',function(){
 		var file=$('.openSheet').val();
 		addSheetTab(file);
 		render(file);
 		$('.existingFileContainer').hide();
 	});
+
 	$('.cancelOpenSheet').on('click',function(){
 		$('.existingFileContainer').hide();
 	});
+
 	$('.swapColumns').on('click',function(){
 		swapColumns();
 	});
+
 	$('.sheetRequired').on('click',function(){
 		if(currentActiveSheet==undefined){
 			alert('No sheet opened');
 		}
 	});
+
 	$('.addEntry').on('click',function(){
 		addEntry();
 	});
+
 	$('.formClose').on('click',function(){
 		$('.entryForm').hide();
 		popupState=false;
-		doNotRender=false;
 	});
+
 	$('.sortButton').on('click',function(){
 		renderData['sortKey']=$('.sort').val();
 		render(currentActiveSheet);
@@ -81,7 +58,7 @@ $(document).ready(function(){
 
 function fetchExistingFileNames(){
 	$.ajax({
-		url:'fees/existingFileNames',
+		url:'/fees/existingFileNames',
 		type:'GET',
 		success:function(data){
 			data=JSON.parse(data);
@@ -98,8 +75,8 @@ function fetchExistingFileNames(){
 	});	
 }
 
-var longest={};
-
+// render function is used to completely render the sheet
+// render() -> updateDataMatrix + renderDataMatrix 
 function render(fileName){
 	longest={};
 	renderData['fileName']=fileName;
@@ -115,6 +92,7 @@ function render(fileName){
 	});
 }
 
+// display data in matrix
 function renderDependency(fileName){
 		var data=dataMatrix[fileName];
 		var rowKeys=data['sortedID'];
@@ -215,6 +193,7 @@ function addSheetTab(fileName){
 	$('.sheetSwitchWindow').append(sheetTab);
 }
 
+// add headings to sort dropdown
 function appendSortHeading(val){
 	var option=document.createElement('option');
 	$(option).attr('val',val);
@@ -231,6 +210,7 @@ function swapColumns(){
 	$('.swapColumns').css({'color':'#69EC97'});
 }
 
+// if swapState is true note the two columns to be swaped
 $(document).on('mousedown',function(e){
 		if(swapState){
 			var clicked=e.target;
@@ -257,7 +237,7 @@ $(document).on('mousedown',function(e){
 
 function swap(swapCol1,swapCol2){	
 	$.ajax({
-		url:'fees/colSwap',
+		url:'/fees/colSwap',
 		type:'GET',
 		data:{'heading1':swapCol1,'heading2':swapCol2,'fileName':currentActiveSheet},
 		success:function(data){
@@ -268,6 +248,7 @@ function swap(swapCol1,swapCol2){
 	})
 }
 
+// renders the input form when add entry button is clicked
 function renderForm(objId,data){
 	var headings=dataMatrix[currentActiveSheet].headings;
 	$('.formRow').remove();
@@ -313,7 +294,7 @@ function renderForm(objId,data){
 
 function fetchAndAddTime(element){
 	$.ajax({
-		url:'fees/fetchLiveTime',
+		url:'/fees/fetchLiveTime',
 		type:'GET',
 		success:function(data){
 			$('.'+element.id).attr('beginTime',data);	
@@ -322,6 +303,7 @@ function fetchAndAddTime(element){
 }
 
 var readyState=true;
+// save function, runs every second to save and display data every second
 setInterval(function(){
 	if(currentActiveSheet!=undefined&&readyState){
 		readyState=false;
@@ -337,19 +319,18 @@ setInterval(function(){
 			data[objId][heading].time=$(elements[i]).attr('beginTime')==undefined?'':$(elements[i]).attr('beginTime');
 		}
 		$.ajax({
-			url:'fees/save',
+			url:'/fees/save',
 			method:'POST',
 			data:{'data':JSON.stringify(data), 'fileName':currentActiveSheet},
 			success:function(data){
-				if(!doNotRender){
-					renderPartial(currentActiveSheet,data);
-				}
+				renderPartial(currentActiveSheet,data);
 				readyState=true;
 			}
 		});	
 	}
 },1000);
 
+// rerender unlocked cells
 function renderPartial(fileName,data){
 	var rowKeys=Object.keys(data);
 	for(var i=0;i<rowKeys.length;i++)
@@ -382,7 +363,7 @@ function renderPartial(fileName,data){
 function importFile(matrix,fileName){
 	matrix=JSON.stringify(matrix);
 	$.ajax({
-		url:'fees/importFile',
+		url:'/fees/importFile',
 		type:'POST',
 		data:{'fileName':fileName,'content':matrix},
 		success:function(data){
@@ -394,11 +375,10 @@ function importFile(matrix,fileName){
 
 function addEntry(){
 	$.ajax({
-		url:'fees/addNewEntry',
+		url:'/fees/addNewEntry',
 		type:'GET',
 		data:{'fileName':currentActiveSheet},
 		success:function(data){
-			targetId=data;
 			dataMatrix[currentActiveSheet][data]={};
 			var headings=dataMatrix[currentActiveSheet].headings;
 			for(var i=0;i<headings.length;i++)
@@ -442,18 +422,6 @@ function addEntry(){
 	});
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // import logic
 $('.hiddenInput').on('change',function(e) {
 	   var file = e.target.files[0]; 
@@ -494,3 +462,34 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
+
+function manageCSRF(){
+	function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+}

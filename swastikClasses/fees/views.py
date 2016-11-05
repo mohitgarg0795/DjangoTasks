@@ -190,7 +190,7 @@ def save(request):
 		context[str(id)] = storedEntry
 		context[str(id)].pop('_id',None)
 	print('------------')
-	#print context
+	print context
 	print('------------')
 	#return HttpResponse("success")
 	return JsonResponse(context)
