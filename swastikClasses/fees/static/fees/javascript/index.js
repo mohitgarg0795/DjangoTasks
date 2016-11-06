@@ -38,6 +38,7 @@ $(document).ready(function(){
 	$('.sheetRequired').on('click',function(){
 		if(currentActiveSheet==undefined){
 			alert('No sheet opened');
+			return;
 		}
 	});
 
@@ -48,6 +49,10 @@ $(document).ready(function(){
 	$('.formClose').on('click',function(){
 		$('.entryForm').hide();
 		popupState=false;
+	});
+
+	$('.downloadFile').on('click',function(){
+		downloadFile(currentActiveSheet);
 	});
 
 	$('.sortButton').on('click',function(){
@@ -462,6 +467,36 @@ $('.hiddenInput').on('change',function(e) {
 	   	}
 	   reader.readAsText(file)
 });
+
+function downloadFile(fileName){
+	var csv='';
+	var headings=dataMatrix[fileName]['headings'];
+	for(var i=0;i<headings.length;i++)
+	{
+		var data=headings[i];
+		if(data.indexOf(',')>=0){data='"'+data+'"'}
+		csv+=data+',';
+	}
+	csv+='\n';
+	var rowKeys=Object.keys(dataMatrix[fileName]['sortedID']);
+	for(var i=0;i<rowKeys.length;i++)
+	{
+		var currentRowKey=dataMatrix[fileName]['sortedID'][i];
+		for(var j=0;j<headings.length;j++)
+		{
+			var data=dataMatrix[fileName][currentRowKey][headings[j]].val;
+			if(data.indexOf(',')>=0){data='"'+data+'"'}
+			csv+=data+',';
+		}
+		csv+='\n';
+	}
+	var a = document.createElement('a');
+	a.href = window.URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+	a.download = fileName+'.csv';
+	document.body.appendChild(a)
+	a.click();
+	document.body.removeChild(a)
+}
 
 function manageCSRF(){
 	function getCookie(name) {
