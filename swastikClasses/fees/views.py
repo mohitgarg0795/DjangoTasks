@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from pymongo import MongoClient
 import json
 from bson import ObjectId
+from time import time
 
 client = MongoClient()
 
@@ -13,15 +14,7 @@ def checkEmpty(x):
 
 def getCurrTime():
 	try:
-	    import ntplib
-	    c = ntplib.NTPClient()
-	    #response = client.request('europe.pool.ntp.org', version=3)
-	    response = c.request('pool.ntp.org')
-	    #os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.localtime(response.tx_time)))
-	    #currTime = ctime(response.tx_time)
-	    return int(response.tx_time)
-	    #currTime = currTime.split(' ')
-	    #return currTime[1] + ':' + currTime[2] + ':' + currTime[3]		# month:date:hr:min:sec
+	   	return int(time())
 	except:
 	    return getCurrTime()
 
