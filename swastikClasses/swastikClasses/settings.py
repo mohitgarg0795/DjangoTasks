@@ -15,7 +15,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#from mongoengine import connect
+from mongoengine import connect
 
 #connect(host = '127.0.0.1', username='root', password='root')
 #connect('swastikClasses')

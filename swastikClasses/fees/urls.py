@@ -19,7 +19,6 @@ from django.contrib import admin
 import fees.views as fviews
 
 urlpatterns = [
-    url(r'^$', fviews.index),
     url(r'^importFile$', fviews.importFile),
     url(r'^existingFileNames$', fviews.existingFileNames),
     url(r'^openFile$', fviews.openFile),
